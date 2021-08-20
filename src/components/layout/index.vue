@@ -27,25 +27,25 @@ import MyNav from "./components/nav.vue";
     top: 0;
     left: 0;
     z-index: 1;
-    height: 70px;
+    height: 50px;
     width: 100vw;
     background-color: #1890ff;
   }
   #layout-nav {
     position: absolute;
-    top: 70px;
+    top: 50px;
     left: 0;
     z-index: 2;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 50px);
     width: 200px;
   }
   #layout-main {
     position: absolute;
     z-index: 3;
-    top: 70px;
+    top: 50px;
     right: 0;
 
-    height: calc(100vh - 70px);
+    height: calc(100vh - 50px);
     width: calc(100vw - 200px);
     background: #f0f2f5;
     overflow: auto;

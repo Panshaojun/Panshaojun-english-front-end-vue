@@ -4,7 +4,11 @@ const routes:RouteRecordRaw[] = [
     {
         path:"/",
         component:Home
-    }
+    },
+    {
+      path:"/study",
+      component:()=>import("@/views/study/index.vue")
+  }
 ];
 const router = createRouter({
   history: createWebHashHistory(),

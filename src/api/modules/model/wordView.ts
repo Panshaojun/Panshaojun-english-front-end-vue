@@ -10,7 +10,7 @@ import { WordChange } from '@/api/utils/bingParser/word-change';
 import { Long } from '@/api/utils/vocabularyParser/long';
 import { Short } from '@/api/utils/vocabularyParser/short';
 import { W } from '@/api/utils/vocabularyParser/w';
-type WordView = {
+export type WordView = {
     id: number,
     b_w: KeyWord,
     definition: Definition,

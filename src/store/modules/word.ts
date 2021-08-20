@@ -6,11 +6,11 @@ import {findAll} from '@/api/modules/model/word';
 const index:Module<WordState,rootState>={
     namespaced:true,
     state:{
-        word:[]
+        data:[]
     },
     mutations:{
-        SET_word(state, word) {
-            state.word = word;
+        SET_word(state, data) {
+            state.data = data;
         },
     },
     actions:{
@@ -18,19 +18,20 @@ const index:Module<WordState,rootState>={
             const data = localStorage.getItem('data') || false;
             if(data){
                 console.log("本地获取了word数据！");
-                commit("SET_word",data);
+                commit("SET_word",JSON.parse(data));
             }else{
                 const result=await dispatch("freshWord");
                 if(!result){
-                    console.warn("word数据初始化失败！")
+                    console.warn("word数据初始化失败！");
                 }
             }
         },
-        freshWord:({commit})=>new Promise((resolve)=>{
+        freshWord:({commit,state})=>new Promise((resolve)=>{
             findAll().then(res=>{
                 if(res){
                     console.log("服务器获取了word数据！");
                     commit("SET_word",res);
+                    localStorage.setItem('data',JSON.stringify(state.data));
                     resolve(true);
                 }else{
                     console.log("服务器获取的word数据有错误");
