@@ -1,16 +1,21 @@
 <template>
   <div>
-    <button @click="add">认识(←)</button>
-    <button @click="add">学习(→)</button>
+    <StudyList>
+      <template #btn="{ closeVisible }">
+        <div>
+          <a-button @click="closeVisible">在学习</a-button>
+        </div>
+      </template>
+    </StudyList>
     <p>按<kbd>←</kbd>表示我认识，按<kbd>→</kbd>添加学习</p>
-    <p>按<kbd>↑</kbd>往上浏览，按<kbd>↓</kbd>往下浏览</p>
+    <p>按<kbd>↑</kbd><kbd>↓</kbd>浏览</p>
     <a-row>
       <a-col :span="4">
         <ol>
           <li
             v-for="(i, index) of store.state.study.showData"
             :class="[index === showIndex ? 'study__word-active' : '']"
-            @click="showIndex=index"
+            @click="showIndex = index"
           >
             {{ i.id }}.{{ i.w }}
           </li>
@@ -28,17 +33,17 @@ import { ref, computed } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
-
+import StudyList from "./components/study-list.vue";
 const store = useStore(key);
 const showData = computed(() => store.state.study.showData);
 const showIndex = ref<number>(-1);
 
 store.dispatch("study/initShowStartIndex");
 const add = () => store.dispatch("study/addShowLength", 10);
-const iSee = (id: number) => store.dispatch("study/addDeleted", id);
-const iStudy = (id: number) => store.dispatch("study/addStudy", id);
-const cancel_iSee = (id: number) => store.dispatch("study/delDeleted", id);
-const cancel_iStudy = (id: number) => store.dispatch("study/delStudy", id);
+const iSee = () =>
+  store.dispatch("study/addDeleted", showData.value[showIndex.value].id);
+const Study = () =>
+  store.dispatch("study/addStudy", showData.value[showIndex.value].id);
 
 //键盘控制浏览展示数据！
 const browseShowWord: (direction: 1 | -1) => void = (direction) => {
@@ -59,8 +64,10 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
 document.onkeydown = (e) => {
   switch (e.key) {
     case "ArrowLeft":
+      iSee();
       break;
     case "ArrowRight":
+      Study();
       break;
     case "ArrowUp":
       browseShowWord(-1);
@@ -95,7 +102,7 @@ kbd {
 .study__word-active {
   color: red;
 }
-.study__third-party{
+.study__third-party {
   position: fixed;
   top: 55px;
   right: 0;
