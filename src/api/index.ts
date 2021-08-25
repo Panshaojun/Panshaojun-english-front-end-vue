@@ -1,8 +1,8 @@
 import axios from 'axios';
-type ResponseType<T>={
-    code:number,
-    data:T,
-    msg:string
+type ResponseType<T> = {
+    code: number,
+    data: T,
+    msg: string
 }
 const statusCode: { [key in string]: string } = {
     100: "continue",
@@ -64,7 +64,7 @@ const statusCode: { [key in string]: string } = {
     510: "not extended",
     511: "network authentication required",
 }
-export const api= axios.create({ //我自己服务器的api
+export const api = axios.create({ //我自己服务器的api
     baseURL: process.env.NODE_ENV === 'development' ? "/api" : "",
     responseType: 'json'
 })

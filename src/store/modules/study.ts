@@ -2,7 +2,7 @@ import { Module } from 'vuex';
 import to from 'await-to-js';
 import StudyState from '../types/study';
 import rootState from '../types';
-import { getMaxReviewId } from '@/api/modules/db/index';
+import { getMaxReviewId,saveStudy } from '@/api/modules/db/index';
 const index: Module<StudyState, rootState> = {
     namespaced: true,
     state: {
@@ -106,7 +106,23 @@ const index: Module<StudyState, rootState> = {
                 commit("SET_deletedData", temp2);
             }
         },
-
+        saveStudy: async ({ state }, date) => {
+            const studyData=state.studyData;
+            const data=studyData.map(i=>{
+                return {
+                    id:i.id,
+                    rid:0,
+                    mark:"",
+                    comment:"",
+                }
+            })
+            const [err]= await to(saveStudy(date,data));
+            if(err){
+                alert(err)
+            }else{
+                
+            }
+        },
     }
 }
 

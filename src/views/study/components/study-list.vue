@@ -6,8 +6,8 @@
     :closable="false"
     v-model:visible="visible"
   >
-    <div v-for="i of studyData">
-        <a-button @click="cancelStudy(i.id)">取消</a-button>&nbsp;&nbsp; {{ i.w }}
+    <div v-for="i of data">
+      <a-button @click="cancel(i.id)">取消</a-button>&nbsp;&nbsp; {{ i.w }}
     </div>
   </a-drawer>
 </template>
@@ -18,7 +18,7 @@ import { useStore } from "vuex";
 import { key } from "@/store";
 
 const store = useStore(key);
-const studyData = computed(() => store.state.study.studyData);
+const data = computed(() => store.state.study.studyData);
 let visible = ref(false);
-const cancelStudy = (id: number) => store.dispatch("study/delStudy", id);
+const cancel = (id: number) => store.dispatch("study/delStudy", id);
 </script>

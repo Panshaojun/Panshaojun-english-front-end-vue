@@ -2,11 +2,15 @@
   <div>
     <StudyList>
       <template #btn="{ closeVisible }">
-        <div>
-          <a-button @click="closeVisible">在学习</a-button>
-        </div>
+        <a-button @click="closeVisible">在学习</a-button>
       </template>
     </StudyList>
+    <ISeeList>
+      <template #btn="{ closeVisible }">
+        <a-button @click="closeVisible">我认识</a-button>
+      </template>
+    </ISeeList>
+    <a-button @click="save">保存单词</a-button>
     <p>按<kbd>←</kbd>表示我认识，按<kbd>→</kbd>添加学习</p>
     <p>按<kbd>↑</kbd><kbd>↓</kbd>浏览</p>
     <a-row>
@@ -29,17 +33,20 @@
 </template>
 
 <script setup lang="ts">
+import moment from 'moment';
 import { ref, computed } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import StudyList from "./components/study-list.vue";
+import ISeeList from "./components/i-see-list.vue";
 const store = useStore(key);
 const showData = computed(() => store.state.study.showData);
 const showIndex = ref<number>(-1);
 
 store.dispatch("study/initShowStartIndex");
 const add = () => store.dispatch("study/addShowLength", 10);
+const save=()=>store.dispatch("study/saveStudy",moment().format("Y-MM-DD"));
 const iSee = () =>
   store.dispatch("study/addDeleted", showData.value[showIndex.value].id);
 const Study = () =>
