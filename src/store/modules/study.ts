@@ -119,8 +119,6 @@ const index: Module<StudyState, rootState> = {
             const [err]= await to(saveStudy(date,data));
             if(err){
                 alert(err)
-            }else{
-                
             }
         },
     }

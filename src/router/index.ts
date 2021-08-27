@@ -1,14 +1,21 @@
-import Home from '@/views/Home.vue';
-import { createRouter, createWebHashHistory,RouteRecordRaw } from 'vue-router'
-const routes:RouteRecordRaw[] = [
-    {
-        path:"/",
-        component:Home
-    },
-    {
-      path:"/study",
-      component:()=>import("@/views/study/index.vue")
-  }
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+const routes: RouteRecordRaw[] = [
+  {
+    path: "/study",
+    component: () => import("@/views/study/index.vue")
+  },
+  {
+    path: "/review",
+    component: () => import("@/views/review/index.vue")
+  },
+  {
+    path: "/review-today",
+    component: () => import("@/views/review-today/index.vue")
+  },
+  {
+    path: "/review-all",
+    component: () => import("@/views/review-all/index.vue")
+  },
 ];
 const router = createRouter({
   history: createWebHashHistory(),

@@ -5,24 +5,27 @@
     v-model:openKeys="openKeys"
     v-model:selectedKeys="selectedKeys"
     mode="inline"
-    @click="handleClick"
   >
-    <a-sub-menu key="sub1" @titleClick="titleClick">
+    <a-sub-menu key="sub1">
       <template #icon>
         <MailOutlined />
       </template>
       <template #title>新单词</template>
       <a-menu-item key="1">
-        学习新单词
+        <router-link to="/study">学习新单词</router-link>
       </a-menu-item>
     </a-sub-menu>
-    <a-sub-menu key="sub2" @titleClick="titleClick">
+    <a-sub-menu key="sub2">
       <template #icon>
         <AppstoreOutlined />
       </template>
       <template #title>旧单词</template>
-      <a-menu-item key="5">今日复习</a-menu-item>
-      <a-menu-item key="6">全部复习</a-menu-item>
+      <a-menu-item key="5"
+        ><router-link to="/review-today">今日学习</router-link></a-menu-item
+      >
+      <a-menu-item key="6"
+        ><router-link to="/review-all">所有学习</router-link></a-menu-item
+      >
     </a-sub-menu>
     <a-sub-menu key="sub4">
       <template #icon>
@@ -48,12 +51,6 @@ export default defineComponent({
   setup() {
     const selectedKeys = ref<string[]>(["1"]);
     const openKeys = ref<string[]>(["sub1"]);
-    const handleClick = (e: Event) => {
-      console.log("click", e);
-    };
-    const titleClick = (e: Event) => {
-      console.log("titleClick", e);
-    };
     watch(
       () => openKeys,
       (val) => {
@@ -63,9 +60,6 @@ export default defineComponent({
     return {
       selectedKeys,
       openKeys,
-
-      handleClick,
-      titleClick,
     };
   },
   components: {
