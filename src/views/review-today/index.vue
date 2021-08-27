@@ -20,15 +20,9 @@
       </a-list>
     </a-col>
   </a-row>
-
-  <div>复习界面</div>
-  <ul>
-    <li v-for="i of data" :key="i.id"></li>
-  </ul>
 </template>
 
 <script setup lang="ts">
-import moment from "moment";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { useStore } from "vuex";
