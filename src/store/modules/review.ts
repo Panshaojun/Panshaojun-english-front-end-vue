@@ -10,8 +10,8 @@ import to from 'await-to-js';
 const index: Module<ReviewState, rootState> = {
     namespaced: true,
     state: {
-        data: [],
-        reviewData:[],
+        data: [],//所有复习情况
+        reviewData:[], //某一天复习的数据
     },
     mutations: {
         SET_data(state, data) {

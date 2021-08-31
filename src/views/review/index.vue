@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useStore } from "vuex";
 import { key } from "@/store";
 const store = useStore(key);
@@ -14,5 +15,5 @@ const dataInfo=(id:number)=>{
   const index=data.findIndex(i=>i.id===id);
   return index===-1?"找不到数据":data[index].w;
 }
-const data=store.state.review.reviewData;
+const data=computed(()=>store.state.review.reviewData);
 </script>

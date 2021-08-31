@@ -1,19 +1,22 @@
 <template>
-  <div>
-    <StudyList>
-      <template #btn="{ closeVisible }">
-        <a-button @click="closeVisible">在学习</a-button>
-      </template>
-    </StudyList>
-    <ISeeList>
-      <template #btn="{ closeVisible }">
-        <a-button @click="closeVisible">我认识</a-button>
-      </template>
-    </ISeeList>
-    <a-button @click="save">保存单词</a-button>
-    <p>按<kbd>←</kbd>表示我认识，按<kbd>→</kbd>添加学习</p>
-    <p>按<kbd>↑</kbd><kbd>↓</kbd>浏览</p>
     <a-row>
+      <a-col :span="24">
+        <ISeeList>
+          <template #btn="{ closeVisible }">
+            <a-button @click="closeVisible">我认识</a-button>
+          </template>
+        </ISeeList>
+        <StudyList>
+          <template #btn="{ closeVisible }">
+            <a-button @click="closeVisible">在学习</a-button>
+          </template>
+        </StudyList>
+        <a-date-picker v-model:value="date" />
+        <a-button @click="save">保存单词</a-button>
+        <a-divider />
+        <p>认识<kbd>←</kbd><kbd>→</kbd>学习</p>
+        <p>上翻<kbd>↑</kbd><kbd>↓</kbd>下翻</p>
+      </a-col>
       <a-col :span="4">
         <ol>
           <li
@@ -29,11 +32,10 @@
         <ThirdParty :wordId="showData[showIndex].id" />
       </a-col>
     </a-row>
-  </div>
 </template>
 
 <script setup lang="ts">
-import moment from 'moment';
+import moment from "moment";
 import { ref, computed } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
@@ -43,10 +45,11 @@ import ISeeList from "./components/i-see-list.vue";
 const store = useStore(key);
 const showData = computed(() => store.state.study.showData);
 const showIndex = ref<number>(-1);
-
+const date=ref(moment().format("Y-MM-DD"));
 store.dispatch("study/initShowStartIndex");
 const add = () => store.dispatch("study/addShowLength", 10);
-const save=()=>store.dispatch("study/saveStudy",moment().format("Y-MM-DD"));
+const save = () =>
+  store.dispatch("study/saveStudy", date.value);
 const iSee = () =>
   store.dispatch("study/addDeleted", showData.value[showIndex.value].id);
 const Study = () =>
@@ -110,9 +113,6 @@ kbd {
   color: red;
 }
 .study__third-party {
-  position: fixed;
-  top: 55px;
-  right: 0;
   height: calc(100vh - 55px);
   width: calc(100vw - 450px);
   overflow: auto;
