@@ -15,7 +15,6 @@ const index: Module<ReviewState, rootState> = {
     },
     mutations: {
         SET_data(state, data) {
-            console.log(data);
             state.data = data;
         },
         SET_reviewData(state,data){

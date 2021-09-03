@@ -1,11 +1,8 @@
 <template>
   <div id="layout">
     <header id="layout-header">
-      ？？
+      <my-header/>
     </header>
-    <nav id="layout-nav">
-      <my-nav />
-    </nav>
     <main id="layout-main">
       <router-view />
     </main>
@@ -13,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import MyNav from "./components/nav.vue";
+import MyHeader from './components/header.vue';
 </script>
 
 <style lang="scss">
@@ -26,27 +23,20 @@ import MyNav from "./components/nav.vue";
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    padding: 10px 20px;
+    z-index: 4;
     height: 50px;
     width: 100vw;
-    background-color: #1890ff;
-  }
-  #layout-nav {
-    position: absolute;
-    top: 50px;
-    left: 0;
-    z-index: 2;
-    height: calc(100vh - 50px);
-    width: 200px;
+    background-color: white;
+    box-shadow: 0 0 5px 5px rgba($color: #000000, $alpha: .1);
   }
   #layout-main {
     position: absolute;
     z-index: 3;
     top: 50px;
     right: 0;
-
     height: calc(100vh - 50px);
-    width: calc(100vw - 200px);
+    width: 100vw;
     background: #f0f2f5;
     overflow: auto;
   }

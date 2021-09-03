@@ -7,7 +7,7 @@
     v-model:visible="visible"
   >
     <div v-for="i of data">
-      <a-button @click="cancel(i.id)">取消</a-button>&nbsp;&nbsp; {{ i.w }}
+        <a-button @click="cancel(i.id)">取消</a-button>&nbsp;&nbsp; {{ i.w }}{{i.comment}}
     </div>
   </a-drawer>
 </template>
@@ -22,3 +22,5 @@ const data = computed(() => store.state.study.studyData);
 let visible = ref(false);
 const cancel = (id: number) => store.dispatch("study/delStudy", id);
 </script>
+
+

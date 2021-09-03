@@ -2,7 +2,7 @@ import { Module } from 'vuex';
 import to from 'await-to-js';
 import StudyState from '../types/study';
 import rootState from '../types';
-import { getMaxReviewId,saveStudy } from '@/api/modules/db/index';
+import { getMaxReviewId, saveStudy } from '@/api/modules/db/index';
 const index: Module<StudyState, rootState> = {
     namespaced: true,
     state: {
@@ -56,7 +56,9 @@ const index: Module<StudyState, rootState> = {
             const additionalData = rootState.word.data.slice(startIndex, endIndex);
             const data = [...state.showData, ...additionalData];
             commit("SET_showLength", state.__showLength + len);
-            commit("SET_showData", data);
+            commit("SET_showData", data.map(i => {
+                return { ...i, comment: "" }//初始化学习数据
+            }));
         },
         //添加学习单词
         addStudy: async ({ commit, state }, id) => {
@@ -107,17 +109,17 @@ const index: Module<StudyState, rootState> = {
             }
         },
         saveStudy: async ({ state }, date) => {
-            const studyData=state.studyData;
-            const data=studyData.map(i=>{
+            const studyData = state.studyData;
+            const data = studyData.map(i => {
                 return {
-                    id:i.id,
-                    rid:0,
-                    mark:"",
-                    comment:"",
+                    id: i.id,
+                    rid: 0,
+                    mark: "",
+                    comment: i.comment ? i.comment : "",
                 }
             })
-            const [err]= await to(saveStudy(date,data));
-            if(err){
+            const [err] = await to(saveStudy(date, data));
+            if (err) {
                 alert(err)
             }
         },

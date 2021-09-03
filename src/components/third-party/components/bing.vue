@@ -57,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import { WordView } from "@/api/modules/model/wordView";

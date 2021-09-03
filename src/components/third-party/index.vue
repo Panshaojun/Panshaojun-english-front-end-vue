@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, watch, reactive } from "vue";
+import {  watch, reactive } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import { WordView } from "@/api/modules/model/wordView";
