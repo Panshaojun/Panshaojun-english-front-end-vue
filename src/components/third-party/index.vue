@@ -5,8 +5,7 @@
     </div>
     <div v-else>
       <div v-if="thirdParty.data">
-        <my-vocabulary :data="thirdParty.data" />
-        <my-bing :data="thirdParty.data" />
+        <MyDisplay :data="thirdParty.data"></MyDisplay>
       </div>
       <div v-else>获取的数据为空</div>
     </div>
@@ -18,8 +17,7 @@ import {  watch, reactive } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import { WordView } from "@/api/modules/model/wordView";
-import MyBing from "./components/bing.vue";
-import MyVocabulary from "./components/vocabulary.vue";
+import MyDisplay from './components/display.vue';
 const store = useStore(key);
 const props = defineProps<{
   wordId: number;

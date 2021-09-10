@@ -9,4 +9,11 @@ export type ReviewWord = {
 
 const model=new Model('reviewWord');
 
-export const find=(id:number)=>model.findWhere<ReviewWord[]>({where:{rid:id}})
+export const find=(id:number)=>model.findWhere<ReviewWord[]>({where:{rid:id},limit:1000});
+
+export const update=(data:ReviewWord)=>{
+    const id=data.id;
+    const newData=Object.assign(data);
+    delete newData.id;
+    return model.update(id,newData).then(()=>true).catch(()=>false);
+}
