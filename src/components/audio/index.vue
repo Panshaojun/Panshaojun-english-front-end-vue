@@ -1,8 +1,8 @@
 <template>
-  <span class="c-audio">
+  <span class="c-audio" @mouseleave="pauseAudio()">
     <span v-if="audioUrl">
-      播放
-      <audio loop>
+      <span @click="playAudio()">播放</span>
+      <audio loop :ref="audioDom">
         <source :src="audioUrl" type="audio/mp3" />
       </audio>
     </span>
@@ -22,11 +22,23 @@ const props = defineProps<{
   };
 }>();
 const audioUrl = ref("");
+const audioDom=ref<HTMLAudioElement>();
 store.dispatch("cache/getAudio", props.aduio).then((res) => {
   if (res) {
     audioUrl.value = res;
   }
 });
+const playAudio=()=>{
+  if(audioDom.value){
+    audioDom.value.currentTime=0;
+    audioDom.value.play();
+  }
+}
+const pauseAudio=()=>{
+  if(audioDom.value){
+    audioDom.value.pause();
+  }
+}
 </script>
 
 <style lang="scss"></style>
