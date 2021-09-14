@@ -12,11 +12,11 @@
             {{ i.w }}
           </span>
           <span class="edit-comment" @click.capture="openModal(i)">
-            <EditOutlined  />
+            <EditOutlined />
           </span>
-        <span class="comment">
-            {{i.comment}}
-        </span>
+          <span class="comment">
+            {{ i.comment }}
+          </span>
         </li>
       </ul>
     </a-col>
@@ -27,7 +27,7 @@
 
   <a-modal
     v-model:visible="modal.visible"
-    title="备注，只有加入学习才能被记录"
+    title="添加笔记，只有学习才能被记录"
     @ok="modal.visible = false"
   >
     <a-input v-if="modal.word" v-model:value="modal.word.comment"></a-input>
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, onUnmounted } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
@@ -54,7 +54,6 @@ const openModal = (word: StudyData) => {
   modal.word = word;
   modal.visible = true;
 };
-
 
 const showIndex = ref<number>(-1); //当前 showData 中被展示的数组下标
 const wordId = computed(() => {
@@ -86,17 +85,20 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   showIndex.value += direction;
 };
 document.onkeydown = (e) => {
+  if (modal.visible) {
+    return;
+  }
   switch (e.key) {
-    case "ArrowLeft":
+    case "a":
       iSee();
       break;
-    case "ArrowRight":
+    case "d":
       Study();
       break;
-    case "ArrowUp":
+    case "w":
       browseShowWord(-1);
       break;
-    case "ArrowDown":
+    case "s":
       browseShowWord(1);
       break;
     case "Enter":
@@ -106,6 +108,7 @@ document.onkeydown = (e) => {
     default:
   }
 };
+onUnmounted(() => (document.onkeydown = null));
 </script>
 
 <style lang="scss">
@@ -127,10 +130,12 @@ kbd {
   padding-left: 20px;
   list-style: none;
   .li {
-    &:hover .comment,&:hover .edit-comment{
+    &:hover .comment,
+    &:hover .edit-comment {
       opacity: 1;
     }
-    .comment,.edit-comment {
+    .comment,
+    .edit-comment {
       margin-left: 10px;
       cursor: pointer;
       opacity: 0;

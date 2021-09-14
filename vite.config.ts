@@ -23,11 +23,6 @@ export default defineConfig({
         target: 'http://localhost:1337',
         changeOrigin: true,
       },
-      "/backup":{
-        target: 'http://english.panshaojun.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/backup/, '')
-      },
     }
   }
 })

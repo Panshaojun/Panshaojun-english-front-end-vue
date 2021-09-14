@@ -11,7 +11,7 @@ export const fetchAudio = async (id:number,fileStr: string) => {
     }
     const fileName = fileStr.split('/').slice(5).join('');
     if (fileUrl && fileName) {
-        return await post<string>('upload/fetchfile', {id, fileName, fileUrl })
+        return await post<string>('upload/aduio', {id, fileName, fileUrl })
     } else {
         return null;
     }

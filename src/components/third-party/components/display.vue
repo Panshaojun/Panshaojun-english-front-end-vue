@@ -2,14 +2,18 @@
   <div class="bing">
     <div>
       <div>
-        <h3>{{props.data.id}}</h3>
-      <h3>{{ props.data.v_w }}</h3>
-      <p class="v-des" v-html="props.data.v_short"></p>
-      <p class="v-des" v-html="props.data.v_long"></p>
-    </div>
+        <h3>{{ props.data.id }}</h3>
+        <h3>{{ props.data.v_w }}</h3>
+        <p class="v-des" v-html="props.data.v_short"></p>
+        <p class="v-des" v-html="props.data.v_long"></p>
+      </div>
       <h3>{{ props.data.b_w }}</h3>
       <div class="bing_audio">
-        <span v-for="i of props.data.audio">
+        <span v-for="(i, index) of props.data.audio">
+          <MyAudio
+            v-if="index === 0"
+            :audio="audioData"
+          />
           <span v-html="i.title"></span>
         </span>
       </div>
@@ -63,19 +67,24 @@
 </template>
 
 <script setup lang="ts">
+import {computed} from "vue";
+import MyAudio from "@/components/audio/index.vue";
 import { WordView } from "@/api/modules/model/wordView";
 const props = defineProps<{
   data: WordView;
 }>();
+const audioData=computed(()=>{
+  return { id: props.data.id, url: props.data.audio[0].url }
+})
 </script>
 
 <style lang="scss">
 #third-party {
   .v-des {
-      i {
-        color: red;
-      }
+    i {
+      color: red;
     }
+  }
   .bing {
     display: flex;
     .sider {

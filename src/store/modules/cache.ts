@@ -42,7 +42,7 @@ const index: Module<CacheState, rootState> = {
             } else {
                 const [, serverAudioUrl] = await to(fetchAudio(id,url));
                 if (serverAudioUrl) {
-                    commit("SET_singleAudio", audioUrl);
+                    commit("SET_singleAudio", {id,url:serverAudioUrl});
                 }
                 return serverAudioUrl;
             }

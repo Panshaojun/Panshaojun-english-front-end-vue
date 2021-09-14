@@ -1,93 +1,57 @@
 <template>
   <div class="review">
     <div class="review__list">
-      <div>
-        <p>w上翻，s下翻</p>
-      </div>
-      <ul>
-        <li
-          v-for="(i, index) of reviewData"
-          :key="i.id"
-          :class="i.id === wordId && 'review__list-active'"
-        >
-          {{ dataInfo(i.id) }}
-          <a-divider v-if="(index+1) % 10 ===0" />
-        </li>
-      </ul>
+      <ReviewList @idChange="changeWordId" />
     </div>
-    <div class="review__word-info">
+    <div class="review__word-info" ref="wordShowDom">
       <ThirdParty :wordId="wordId"></ThirdParty>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useStore } from "vuex";
-import { key } from "@/store";
+import ReviewList from "./components/List.vue";
 import ThirdParty from "@/components/third-party/index.vue";
-const store = useStore(key);
-const data = store.state.word.data;
-const dataInfo = (id: number) => {
-  const index = data.findIndex((i) => i.id === id);
-  return index === -1 ? "找不到数据" : data[index].w;
-};
-const reviewData = store.state.review.reviewData;
-const reviewIndex = ref<number>(-1); //当前 reviewData 中被展示的数组下标
-const wordId = computed(() => {
-  const word = reviewData[reviewIndex.value];
-  return word ? word.id : -1;
-});
-const browseShowWord: (direction: 1 | -1) => void = (direction) => {
-  if (!reviewData.length) {
-    return;
+import { ref } from "vue";
+const wordId = ref(-1);
+const wordShowDom = ref<HTMLDivElement>();
+const changeWordId = (id: number) => {
+  if (wordShowDom.value) {
+    wordShowDom.value.scrollTop = 0;
   }
-  if (reviewIndex.value === -1) {
-    return (reviewIndex.value = 0);
-  }
-  if (direction === -1 && reviewIndex.value === 0) {
-    return;
-  }
-  if (direction === 1 && reviewIndex.value === reviewData.length - 1) {
-    return;
-  }
-  reviewIndex.value += direction;
-};
-document.onkeydown = (e) => {
-  switch (e.key) {
-    case "ArrowLeft":
-      break;
-    case "ArrowRight":
-      break;
-    case "w":
-      browseShowWord(-1);
-      break;
-    case "s":
-      browseShowWord(1);
-      break;
-    case "Enter":
-      break;
-    case "Backspace":
-      break;
-    default:
-  }
+  wordId.value = id;
 };
 </script>
 
 <style lang="scss">
+kbd {
+  cursor: pointer;
+  background: linear-gradient(180deg, #f4f4f4, #d5d5d5);
+  background-color: #f4f4f4;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px 1px #d5d5d5;
+  font-family: consolas, "Liberation Mono", courier, monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 3px;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
 .review {
   display: flex;
+  height: calc(100vh - 50px);
+  width: 100vw;
+  position: relative;
   .review__list {
-    padding: 20px 0 20px 20px;
     flex: 0 0 200px;
-    ul{
-      list-style: none;
-    }
-    .review__list-active {
-      color: red;
-    }
   }
   .review__word-info {
+    flex: 1;
+    height: 100%;
+    overflow: auto;
+    padding: 20px 0 20px 10px;
   }
 }
 </style>

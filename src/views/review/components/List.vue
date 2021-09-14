@@ -1,22 +1,155 @@
 <template>
-    <div>复习界面</div>
-    <ul>
-        <li v-for="i,index of data" :key="i.id">{{index+1}}.{{dataInfo(i.id)}}{{i.mark}}:{{i.comment}}</li>
-    </ul>
-  </template>
-  
-  <script setup lang="ts">
-  import { useStore } from "vuex";
-  import { key } from "@/store";
-  const store = useStore(key);
-  const dataInfo=(id:number)=>{
-    const data=store.state.word.data;
-    const index=data.findIndex(i=>i.id===id);
-    return index===-1?"找不到数据":data[index].w;
-  }
-  const data=store.state.review.reviewData;
-  const showDetail=()=>{
+  <div class="opt">
+    <p>
+      <kbd @click="browseShowWord(-1)">a</kbd>
+      <kbd @click="browseShowWord(1)">s</kbd>
+    </p>
+    <p v-if="reviewIndex !== -1">
+      {{ reviewData[reviewIndex].comment }}
+      <span class="edit-comment" @click.capture="openUpdateModal(reviewIndex)">
+        <EditOutlined />
+      </span>
+    </p>
+  </div>
+  <ul>
+    <li
+      v-for="(i, index) of reviewData"
+      :key="i.id"
+      :class="index === reviewIndex && 'review__list-active'"
+      @click="() => setReviewIndex(index)"
+    >
+      {{ dataInfo(i.id) }}
+      <a-divider v-if="(index + 1) % 10 === 0" />
+    </li>
+  </ul>
+  <a-modal
+    v-model:visible="updateModal.visible"
+    :title="updateModal.title"
+    @ok="saveUpdate"
+  >
+    <a-input v-model:value="updateModal.data.comment"></a-input>
+  </a-modal>
+</template>
 
+<script setup lang="ts">
+import { computed, ref, reactive, onUnmounted } from "vue";
+import { useStore } from "vuex";
+import { key } from "@/store";
+const store = useStore(key);
+const data = store.state.word.data;
+const emits = defineEmits(["idChange"]);
+import { EditOutlined } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import to from "await-to-js";
+const dataInfo = (id: number) => {
+  const index = data.findIndex((i) => i.id === id);
+  return index === -1 ? "找不到数据" : data[index].w;
+};
+const reviewData = computed(() => store.state.review.reviewData);
+const reviewIndex = ref<number>(-1); //当前 reviewData 中被展示的数组下标
+const setReviewIndex = (index: number) => {
+  const currentData = reviewData.value[index];
+  emits("idChange", currentData.id);
+  reviewIndex.value = index;
+};
+
+//更新
+const updateModal = reactive({
+  visible: false,
+  title: "",
+  data: {
+    id: 0,
+    comment: "",
+  },
+});
+const openUpdateModal = (index: number) => {
+  const currentData = reviewData.value[index];
+  updateModal.title = `更改 「${dataInfo(currentData.id)}」 笔记`;
+  updateModal.data.id = currentData.id;
+  updateModal.data.comment = currentData.comment;
+  updateModal.visible = true;
+};
+const saveUpdate = async () => {
+  const [, res] = await to(
+    store.dispatch("review/changeComment", { ...updateModal.data })
+  );
+  if (res) {
+    message.success("更新备注成功！");
+    updateModal.visible = false;
+  } else {
+    message.warn("更新备注失败！");
   }
-  </script>
-  
+};
+
+//键盘点击事件
+const browseShowWord: (direction: 1 | -1) => void = (direction) => {
+  if (!reviewData.value.length) {
+    return;
+  }
+  if (reviewIndex.value === -1) {
+    return setReviewIndex(0);
+  }
+  if (direction === -1 && reviewIndex.value === 0) {
+    return;
+  }
+  if (direction === 1 && reviewIndex.value === reviewData.value.length - 1) {
+    return;
+  }
+  setReviewIndex(reviewIndex.value + direction);
+};
+document.onkeydown = (e) => {
+  if (updateModal.visible) {
+    return;
+  }
+  switch (e.key) {
+    case "w":
+      browseShowWord(-1);
+      break;
+    case "s":
+      browseShowWord(1);
+      break;
+    case "Enter":
+      break;
+    case "Backspace":
+      break;
+    default:
+  }
+};
+onUnmounted(() => (document.onkeydown = null));
+</script>
+
+<style lang="scss">
+.review__list {
+  padding: 0 0 20px 0;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  .opt {
+    position: sticky;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100px;
+    > p:first-child {
+      padding-top: 10px;
+    }
+    background-color: #f0f2f5;
+    box-shadow: 0 0 5px 5px rgba($color: #000000, $alpha: 0.2);
+    .edit-comment {
+      position: absolute;
+      right: 5px;
+      bottom: 0;
+    }
+  }
+  ul {
+    padding: 20px 10px;
+    list-style: none;
+    li {
+      cursor: pointer;
+    }
+  }
+  .review__list-active {
+    color: red;
+  }
+}
+</style>
