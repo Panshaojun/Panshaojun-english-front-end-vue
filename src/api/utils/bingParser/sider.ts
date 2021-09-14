@@ -12,7 +12,7 @@ export const getSider = (dom: HTMLDocument) => {
     const silderDom = dom.querySelector('.client_search_rightside_content');
     if (silderDom) {
         const chirden = silderDom.children;
-        for (let i of chirden) {
+        for (let i of chirden as any) {
             const silderItem: Part = {
                 title: '',
                 content: []
@@ -31,7 +31,7 @@ export const getSider = (dom: HTMLDocument) => {
 
 const getExamples = (contentDom: NodeListOf<Element>) => {
     const examples: Example[] = [];
-    for (let i of contentDom) {
+    for (let i of contentDom as any) {
         const example: Example = {
             type: "",
             list: []

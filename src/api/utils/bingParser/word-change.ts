@@ -9,7 +9,7 @@ export const getWordChange=(dom: HTMLDocument)=>{
         return ans;
     }
     const wcs=def.querySelectorAll('.client_word_change_word');
-    for(let i of wcs){
+    for(let i of wcs as any){
         const wc={
             key:'',
             val:''

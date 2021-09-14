@@ -11,7 +11,8 @@ export type Dictionary = EnglishChinese[]
 export const getEnglishChinese = (dom: HTMLDocument) => {
     const ans: Dictionary = [];
     const area_childen = dom.querySelectorAll('.defeachseg');
-    for (let i of area_childen) {
+    for (let index=0,len=area_childen.length;index<len;index++) {
+        const i=area_childen[index];
         const temp: EnglishChinese = {
             type: '',
             examples: [],
@@ -21,7 +22,7 @@ export const getEnglishChinese = (dom: HTMLDocument) => {
             temp.type = typeDom.innerHTML;
         }
         const exampleDoms = i.querySelectorAll('.deflistitem');
-        for (let exampleDom of exampleDoms) {
+        for (let exampleDom of exampleDoms as any) {
             const example: Example = {
                 english_words: '',
                 chinese_explanation: ''

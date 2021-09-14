@@ -8,7 +8,7 @@ export type Examples = Example[]
 export const getExamples = (dom: HTMLDocument) => {
     const examplesDom = dom.querySelectorAll('.client_sentence_list');
     const examples: Examples = [];
-    for (let example of examplesDom) {
+    for (let example of examplesDom as any) {
         let enDom: any = example.querySelector('.client_sen_en');
         let cnDom: any = example.querySelector('.client_sen_cn');
         if (enDom && cnDom) {
@@ -22,14 +22,14 @@ const handleEnAndCn: (enDom: HTMLDocument, cnDom: HTMLDocument) => Example = (en
     let enDomChilden = enDom.children; //childNodes can contain [non-element nodes](https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)，
     let cnDomChilden = cnDom.children; //不要用childNodes，因为它包括非元素节点
     let en = '', cn = '';
-    for (let j of enDomChilden) {
+    for (let j of enDomChilden as any) {
         if (j.className === 'client_sentence_search') {
             en += `<span class="key">${j.innerHTML}</span>`
         } else {
             en += j.innerHTML;
         }
     }
-    for (let j of cnDomChilden) {
+    for (let j of cnDomChilden as any) {
         if (j.className === 'client_sentence_search') {
             cn += `<span class="key">${j.innerHTML}</span>`
         } else {

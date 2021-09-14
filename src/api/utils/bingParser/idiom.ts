@@ -38,7 +38,7 @@ const getIdiom = (keyDom: Element | null, valDom: Element | null, examItem: Node
         ans.list.push(valDom.innerHTML);
     }
     if (examItem && examItem.length) {
-        for (let j of examItem) {
+        for (let j of examItem as any) {
             ans.list.push(j.innerHTML);
         }
     }
