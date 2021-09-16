@@ -35,9 +35,11 @@ const store = useStore(key);
 const router = useRouter();
 const data = ref(store.getters["review/day"]());
 store.dispatch("review/freshData");
-const date=ref(moment());
-const changeDate=()=>{
-  const chooseDate=date.value?date.value.format("Y-MM-DD"):moment().format("Y-MM-DD");
+const date = ref(moment());
+const changeDate = () => {
+  const chooseDate = date.value
+    ? date.value.format("Y-MM-DD")
+    : moment().format("Y-MM-DD");
   data.value = store.getters["review/day"](chooseDate);
 };
 const toReview = (id: number) => {

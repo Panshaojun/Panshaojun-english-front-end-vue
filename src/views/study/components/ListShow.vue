@@ -11,7 +11,7 @@
           <span @click="showIndex = index">
             {{ i.w }}
           </span>
-          <span class="edit-comment" @click.capture="openModal(i)">
+          <span class="edit-comment" @click.capture="editComment(i)">
             <EditOutlined />
           </span>
           <span class="comment">
@@ -24,42 +24,30 @@
       <ThirdParty :wordId="wordId" />
     </a-col>
   </a-row>
-
-  <a-modal
-    v-model:visible="modal.visible"
-    title="添加笔记，只有学习才能被记录"
-    @ok="modal.visible = false"
-  >
-    <a-input v-if="modal.word" v-model:value="modal.word.comment"></a-input>
-  </a-modal>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onUnmounted } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import { EditOutlined } from "@ant-design/icons-vue";
 import { StudyData } from "@/store/types/study";
-const store = useStore(key);
-const showData = computed(() => store.state.study.showData);
-const modal = reactive<{
-  visible: boolean;
-  word: StudyData | null;
-}>({
-  visible: false,
-  word: null,
-});
-const openModal = (word: StudyData) => {
-  modal.word = word;
-  modal.visible = true;
-};
 
+
+const emits=defineEmits(["editComment"]);
+const editComment=(word:StudyData)=>emits("editComment",word);
+
+const store = useStore(key);
+
+const showData = computed(() => store.state.study.showData);
 const showIndex = ref<number>(-1); //当前 showData 中被展示的数组下标
+
 const wordId = computed(() => {
   const word = showData.value[showIndex.value];
   return word ? word.id : -1;
 });
+
 store.dispatch("study/initShowStartIndex");
 
 const iSee = () =>
@@ -84,8 +72,9 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   }
   showIndex.value += direction;
 };
+const isEditting=computed(()=>store.state.study.editting);
 document.onkeydown = (e) => {
-  if (modal.visible) {
+  if(isEditting.value){
     return;
   }
   switch (e.key) {

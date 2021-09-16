@@ -6,6 +6,7 @@ export type ReviewView={
     words:number // 对应的单词个数
 }
 
+// reviewDate & reviewWord 's view form;
 const model=new Model("reviewView");
 
 export const findAll=()=>model.findWhere<ReviewView[]>({

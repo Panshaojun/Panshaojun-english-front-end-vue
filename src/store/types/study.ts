@@ -8,6 +8,7 @@ type StudyState = {
     studyData: StudyData[];//所有学习数据
     showData: StudyData[];//展示的学习数据
     deletedData: StudyData[];//删除的学习数据
+    editting:boolean;
 }
 
 export default StudyState;

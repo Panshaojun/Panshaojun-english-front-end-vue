@@ -3,6 +3,7 @@ import to from 'await-to-js';
 import StudyState from '../types/study';
 import rootState from '../types';
 import { getMaxReviewId, saveStudy } from '@/api/modules/db/index';
+import { message } from 'ant-design-vue';
 const index: Module<StudyState, rootState> = {
     namespaced: true,
     state: {
@@ -10,7 +11,8 @@ const index: Module<StudyState, rootState> = {
         __showLength: 0,
         showData: [],
         studyData: [],
-        deletedData: []
+        deletedData: [],
+        editting:false
     },
     mutations: {
         SET_showStartIndex(state, index) {
@@ -28,6 +30,25 @@ const index: Module<StudyState, rootState> = {
         SET_deletedData(state, deletedData) {
             state.deletedData = deletedData;
         },
+        SET_editting(state,status){
+            state.editting=status;
+        },
+        SET_comment(state, { id, comment }) {
+            const { showData, studyData } = state;
+            let targetIndex:number;
+            if((targetIndex=showData.findIndex(i=>i.id===id))!==-1){
+                const data={...showData[targetIndex]};
+                data.comment=comment;
+                showData[targetIndex]=data;
+                return;
+            }
+            if((targetIndex=studyData.findIndex(i=>i.id===id))!==-1){
+                const data={...studyData[targetIndex]};
+                data.comment=comment;
+                studyData[targetIndex]=data;
+                return;
+            }
+        }
     },
     actions: {
         initShowStartIndex: async ({ commit, rootState, dispatch }) => {
@@ -60,7 +81,6 @@ const index: Module<StudyState, rootState> = {
                 return { ...i, comment: "" }//初始化学习数据
             }));
         },
-        //添加学习单词
         addStudy: async ({ commit, state }, id) => {
             const index = state.showData.findIndex(i => i.id === id);
             if (index !== -1) {
@@ -72,7 +92,6 @@ const index: Module<StudyState, rootState> = {
                 commit("SET_showData", temp2);
             }
         },
-        //删除学习单词
         delStudy: async ({ commit, state }, id) => {
             const index = state.studyData.findIndex(i => i.id === id);
             if (index !== -1) {
@@ -84,7 +103,6 @@ const index: Module<StudyState, rootState> = {
                 commit("SET_studyData", temp2);
             }
         },
-        //添加已经认识单词
         addDeleted: async ({ commit, state }, id) => {
             const index = state.showData.findIndex(i => i.id === id);
             if (index !== -1) {
@@ -96,7 +114,6 @@ const index: Module<StudyState, rootState> = {
                 commit("SET_showData", temp2);
             }
         },
-        //删除已经认识单词
         delDeleted: async ({ commit, state }, id) => {
             const index = state.deletedData.findIndex(i => i.id === id);
             if (index !== -1) {
@@ -108,7 +125,7 @@ const index: Module<StudyState, rootState> = {
                 commit("SET_deletedData", temp2);
             }
         },
-        saveStudy: async ({ state }, date) => {
+        saveStudy: async ({ state,dispatch }, date) => {
             const studyData = state.studyData;
             const data = studyData.map(i => {
                 return {
@@ -120,7 +137,10 @@ const index: Module<StudyState, rootState> = {
             })
             const [err] = await to(saveStudy(date, data));
             if (err) {
-                alert(err)
+                message.error("保存学习单词失败");
+            }else{
+                message.success("保存学习单词成功");
+                dispatch("initShowStartIndex");
             }
         },
     }

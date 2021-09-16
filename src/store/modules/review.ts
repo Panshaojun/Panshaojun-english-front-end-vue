@@ -3,6 +3,7 @@ import moment from 'moment';
 import ReviewState from '../types/review';
 import rootState from '../types';
 import { findAll, ReviewView, } from '@/api/modules/model/reviewView';
+import { changeDate } from '@/api/modules/model/reviewDate';
 import { find as FindReviewWord, update as updateRviewWord } from '@/api/modules/model/reviewWord';
 import to from 'await-to-js';
 
@@ -69,6 +70,16 @@ const index: Module<ReviewState, rootState> = {
                 return true;
             }
             return false;
+        },
+        changeDate:async({dispatch},playload: { id: number, date: string })=>{
+            const {id,date}=playload;
+            const [,res]=await to(changeDate(id,date));
+            if(res){
+                dispatch("freshData");
+                return true; 
+            }else{
+                return false;
+            }
         }
     }
 }

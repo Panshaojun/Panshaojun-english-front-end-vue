@@ -2,42 +2,52 @@
   <a-row>
     <a-col :span="24">
       <a-divider />
-      <ISeeList>
+      <ListKnow>
         <template #btn="{ closeVisible }">
           <a-button @click="closeVisible">我认识</a-button>
         </template>
-      </ISeeList>
+      </ListKnow>
       <a-button @click="add()">增加10个</a-button>
 
       <a-date-picker v-model:value="date" />
       <a-button @click="save">保存单词</a-button>
-      <StudyList>
+      <ListStudy @edit-comment="handleEidt">
         <template #btn="{ closeVisible }">
-          <a-button @click="closeVisible">准备学习</a-button>
+          <a-button @click="closeVisible">准备学习{{ studyLength }}</a-button>
         </template>
-      </StudyList>
+      </ListStudy>
       <a-divider />
-
       <!-- <p>认识<kbd>←</kbd><kbd>→</kbd>学习</p>
       <p>上翻<kbd>↑</kbd><kbd>↓</kbd>下翻</p> -->
     </a-col>
   </a-row>
-  <ShowList />
+  <ListShow @edit-comment="handleEidt"/>
+  <EditComment :targetWord="targetWord" />
 </template>
 
 <script setup lang="ts">
 import moment from "moment";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
-import StudyList from "./components/study-list.vue";
-import ISeeList from "./components/i-see-list.vue";
-import ShowList from "./components/show-list.vue";
+import EditComment from "./components/EditComment.vue";
+import ListStudy from "./components/ListStudy.vue";
+import ListKnow from "./components/ListKnow.vue";
+import ListShow from "./components/ListShow.vue";
+import { StudyData } from "@/store/types/study";
+
 const store = useStore(key);
 const date = ref(moment());
 const save = () =>
   store.dispatch("study/saveStudy", date.value.format("Y-MM-DD"));
 const add = () => store.dispatch("study/addShowLength", 10);
+const studyLength = computed(() => store.state.study.studyData.length);
+
+const targetWord = ref<StudyData | null>(null);
+const handleEidt=(word:StudyData)=>{
+  targetWord.value=null;
+  targetWord.value=word;
+};
 </script>
 
 <style lang="scss">
