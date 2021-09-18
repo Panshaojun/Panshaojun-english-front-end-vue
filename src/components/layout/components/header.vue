@@ -1,8 +1,13 @@
 <template>
   <div>
-    <a-button @click="visible = true">
+    <a-button @click="visible = true" :style="{ marginRight: '20px' }">
       <template #icon>
         <MenuFoldOutlined />
+      </template>
+    </a-button>
+    <a-button @click="goBack()">
+      <template #icon>
+        <ArrowLeftOutlined />
       </template>
     </a-button>
   </div>
@@ -55,11 +60,15 @@ import {
   AppstoreOutlined,
   SettingOutlined,
   MenuFoldOutlined,
+  ArrowLeftOutlined,
 } from "@ant-design/icons-vue";
 const visible = ref(false);
 const router = useRouter();
 const go = (url: string) => {
   visible.value = false;
   router.push(url);
+};
+const goBack = () => {
+  router.go(-1);
 };
 </script>
