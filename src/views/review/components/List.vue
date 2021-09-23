@@ -18,7 +18,15 @@
       :class="index === reviewIndex && 'review__list-active'"
       @click="() => setReviewIndex(index)"
     >
-      {{ dataInfo(i.id) }}
+      <p class="li-p">
+        <span :style="i.mark">{{ dataInfo(i.id) }}</span>
+        <span v-if="i.mark" @click.capture="toMark(index, false)">
+          <HeartFilled />
+        </span>
+        <span v-else @click.capture="toMark(index, true)">
+          <HeartOutlined />
+        </span>
+      </p>
       <a-divider v-if="(index + 1) % 10 === 0" />
     </li>
   </ul>
@@ -38,7 +46,11 @@ import { key } from "@/store";
 const store = useStore(key);
 const data = store.state.word.data;
 const emits = defineEmits(["idChange"]);
-import { EditOutlined } from "@ant-design/icons-vue";
+import {
+  EditOutlined,
+  HeartOutlined,
+  HeartFilled,
+} from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import to from "await-to-js";
 const dataInfo = (id: number) => {
@@ -68,6 +80,27 @@ const openUpdateModal = (index: number) => {
   updateModal.data.id = currentData.id;
   updateModal.data.comment = currentData.comment;
   updateModal.visible = true;
+};
+const toMark = async (index: number, isMark: boolean) => {
+  const currentData = reviewData.value[index];
+  let id, mark;
+  id = currentData.id;
+  mark = isMark
+    ? JSON.stringify({
+        fontWeight: "bold",
+        color: "white",
+        backgroundColor:"black",
+        padding:"2px 7px",
+        borderRadius:"5px"
+      })
+    : "";
+  const res = await store.dispatch("review/changeMark", { id, mark });
+  if (res) {
+    message.success(isMark ? "标记成功！" : "取消标记成功！");
+    updateModal.visible = false;
+  } else {
+    message.warn(isMark ? "标记失败！" : "取消标记失败");
+  }
 };
 const saveUpdate = async () => {
   const [, res] = await to(
@@ -124,6 +157,16 @@ onUnmounted(() => (document.onkeydown = null));
   height: 100%;
   overflow: auto;
   position: relative;
+  .li-p {
+    line-height: 15px;
+    > span:first-child{
+      font-weight: bold;
+    }
+    > span:last-child {
+      float: right;
+      margin-right: 10px;
+    }
+  }
   .opt {
     position: sticky;
     left: 0;

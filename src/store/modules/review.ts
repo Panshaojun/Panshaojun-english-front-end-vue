@@ -4,7 +4,7 @@ import ReviewState from '../types/review';
 import rootState from '../types';
 import { findAll, ReviewView, } from '@/api/modules/model/reviewView';
 import { changeDate } from '@/api/modules/model/reviewDate';
-import { find as FindReviewWord, update as updateRviewWord } from '@/api/modules/model/reviewWord';
+import { find as FindReviewWord, update as updateRviewWord, UpdateReviewWordModel } from '@/api/modules/model/reviewWord';
 import to from 'await-to-js';
 
 
@@ -21,15 +21,30 @@ const index: Module<ReviewState, rootState> = {
         SET_reviewData(state, data) {
             state.reviewData = data;
         },
-        SET_comment(state, payload) {
-            const { id, comment } = payload;
-            const ans = state.reviewData.find(i => i.id === id);
-            if (ans) {
-                ans.comment = comment;
+        SET_singleReviewData(state, payload) {
+            const { id } = payload;
+            const index = state.reviewData.findIndex(i => i.id === id);
+            if (index !== -1) {
+                if (payload.mark) {
+                    payload.mark = JSON.parse(payload.mark)
+                }
+                state.reviewData[index] = Object.assign(payload);
+                state.reviewData = [...state.reviewData];
             }
         }
     },
     getters: {
+        tommarow: (state) => {
+            const ans: ReviewView[] = [];
+            const tommarowDate = moment().add(1, "days").format('Y-MM-DD');
+            for (let i of state.data) {
+                if (i.date === tommarowDate) {
+                    ans.push(i);
+                    break;
+                }
+            }
+            return ans;
+        },
         day: (state) => (day: string = moment().format("Y-MM-DD")) => {
             const ans: ReviewView[] = [];
             let Ebbinghaus = [0, 1, 2, 4, 7, 15];
@@ -62,22 +77,27 @@ const index: Module<ReviewState, rootState> = {
                 commit("SET_reviewData", data)
             }
         },
-        changeComment: async ({ commit }, playload: { id: number, comment: string }) => {
-            const { id, comment } = playload;
-            const [, res] = await to(updateRviewWord({ id, comment }));
+        updateReviewData: async ({ commit }, playload: UpdateReviewWordModel) => {
+            const [, res] = await to(updateRviewWord(playload));
             if (res) {
-                commit("SET_comment", { id, comment });
+                commit("SET_singleReviewData", res);
                 return true;
             }
             return false;
         },
-        changeDate:async({dispatch},playload: { id: number, date: string })=>{
-            const {id,date}=playload;
-            const [,res]=await to(changeDate(id,date));
-            if(res){
+        changeComment: async ({ dispatch }, playload: { id: number, comment: string }) => {
+            return await dispatch("updateReviewData", playload);
+        },
+        changeMark: async ({ dispatch }, playload: { id: number, mark: string }) => {
+            return await dispatch("updateReviewData", playload);
+        },
+        changeDate: async ({ dispatch }, playload: { id: number, date: string }) => {
+            const { id, date } = playload;
+            const [, res] = await to(changeDate(id, date));
+            if (res) {
                 dispatch("freshData");
-                return true; 
-            }else{
+                return true;
+            } else {
                 return false;
             }
         }

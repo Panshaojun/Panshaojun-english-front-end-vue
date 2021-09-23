@@ -4,6 +4,29 @@
       <a-col :span="3"></a-col>
       <a-col :span="18">
         <a-divider orientation="left">
+          <h1>明日复习</h1>
+        </a-divider>
+        <a-col :span="24">
+          <a-list item-layout="horizontal" :data-source="tomarrowData">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <div class="review-list">
+                  <div class="date">{{ item.date }}</div>
+                  <div class="nums">{{ item.words }}</div>
+                  <div class="go-review">
+                    <a-button @click="toReview(item.id)">复习</a-button>
+                  </div>
+                </div>
+              </a-list-item>
+            </template>
+          </a-list>
+        </a-col>
+      </a-col>
+    </a-row>
+    <a-row>
+      <a-col :span="3"></a-col>
+      <a-col :span="18">
+        <a-divider orientation="left">
           <h1>今日复习</h1>
         </a-divider>
         <a-col :span="24">
@@ -38,6 +61,7 @@ import moment from "moment";
 const store = useStore(key);
 const router = useRouter();
 const data = ref<any>();
+const tomarrowData=ref<any>();
 store.dispatch("review/freshData");
 
 const date = ref(moment());
@@ -46,6 +70,7 @@ const changeDate = () => {
     ? date.value.format("Y-MM-DD")
     : moment().format("Y-MM-DD");
   data.value = store.getters["review/day"](chooseDate);
+  tomarrowData.value=store.getters["review/tommarow"];
 };
 watch(() => store.state.review.data, changeDate);
 const toReview = (id: number) => {
