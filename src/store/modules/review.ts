@@ -47,7 +47,7 @@ const index: Module<ReviewState, rootState> = {
         },
         day: (state) => (day: string = moment().format("Y-MM-DD")) => {
             const ans: ReviewView[] = [];
-            let Ebbinghaus = [0, 1, 2, 4, 7, 15];
+            let Ebbinghaus = [0, 1, 2, 4, 7, 15, 30, 90, 180];//一月，三月，六月
             let reviewsDay: string[] = [];
             for (let i of Ebbinghaus) {
                 const date = moment(day);

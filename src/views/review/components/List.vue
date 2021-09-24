@@ -3,6 +3,7 @@
     <p>
       <kbd @click="browseShowWord(-1)">a</kbd>
       <kbd @click="browseShowWord(1)">s</kbd>
+      <kbd @click="browseShowWord(1)">space</kbd>
     </p>
     <p v-if="reviewIndex !== -1">
       {{ reviewData[reviewIndex].comment }}
@@ -115,6 +116,17 @@ const saveUpdate = async () => {
 };
 
 //键盘点击事件
+const btnToMark=()=>{
+  const index=reviewIndex.value;
+  if(index!==-1){
+    const currentData = reviewData.value[index];
+    let isMark=true;
+    if(currentData.mark){
+      isMark=false;
+    }
+    toMark(index,isMark);
+  }
+}
 const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   if (!reviewData.value.length) {
     return;
@@ -131,6 +143,7 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   setReviewIndex(reviewIndex.value + direction);
 };
 document.onkeydown = (e) => {
+  console.log(e.key===" ");
   if (updateModal.visible) {
     return;
   }
@@ -141,12 +154,16 @@ document.onkeydown = (e) => {
     case "s":
       browseShowWord(1);
       break;
+    case " ":
+      btnToMark();
+      break;
     case "Enter":
       break;
     case "Backspace":
       break;
     default:
   }
+  e.preventDefault();
 };
 onUnmounted(() => (document.onkeydown = null));
 </script>
