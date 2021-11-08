@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onUnmounted } from "vue";
+import { computed, ref, reactive, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import moment from "moment";
@@ -83,12 +83,12 @@ const openUpdateModal = (index: number) => {
   updateModal.data.comment = currentData.comment;
   updateModal.visible = true;
 };
-const markDate=moment().add(1,"days").format("Y-MM-DD");
+const markDate = moment().add(1, "days").format("Y-MM-DD");
 const toMark = async (index: number, isMark: boolean) => {
   const currentData = reviewData.value[index];
   let id, mark;
   id = currentData.id;
-  mark = isMark? markDate: "";
+  mark = isMark ? markDate : "";
   const res = await store.dispatch("review/changeMark", { id, mark });
   if (res) {
     message.success(isMark ? "标记成功！" : "取消标记成功！");
@@ -110,17 +110,17 @@ const saveUpdate = async () => {
 };
 
 //键盘点击事件
-const btnToMark=()=>{
-  const index=reviewIndex.value;
-  if(index!==-1){
+const btnToMark = () => {
+  const index = reviewIndex.value;
+  if (index !== -1) {
     const currentData = reviewData.value[index];
-    let isMark=true;
-    if(currentData.mark){
-      isMark=false;
+    let isMark = true;
+    if (currentData.mark) {
+      isMark = false;
     }
-    toMark(index,isMark);
+    toMark(index, isMark);
   }
-}
+};
 const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   if (!reviewData.value.length) {
     return;
@@ -136,29 +136,32 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   }
   setReviewIndex(reviewIndex.value + direction);
 };
-document.onkeydown = (e) => {
-  console.log(e.key===" ");
-  if (updateModal.visible) {
-    return;
-  }
-  switch (e.key) {
-    case "w":
-      browseShowWord(-1);
-      break;
-    case "s":
-      browseShowWord(1);
-      break;
-    case " ":
-      btnToMark();
-      break;
-    case "Enter":
-      break;
-    case "Backspace":
-      break;
-    default:
-  }
-  e.preventDefault();
-};
+onMounted(() => {
+  document.onkeydown = (e) => {
+    if (updateModal.visible) {
+      return;
+    }
+    const key = e.key.toLowerCase();
+    switch (key) {
+      case "w":
+        browseShowWord(-1);
+        break;
+      case "s":
+        browseShowWord(1);
+        break;
+      case " ":
+        btnToMark();
+        break;
+      case "Enter":
+        break;
+      case "Backspace":
+        break;
+      default:
+    }
+    e.preventDefault();
+  };
+});
+
 onUnmounted(() => (document.onkeydown = null));
 </script>
 
@@ -168,15 +171,15 @@ onUnmounted(() => (document.onkeydown = null));
   height: 100%;
   overflow: auto;
   position: relative;
-  .mark{
+  .mark {
     font-weight: bold;
     color: black;
     border-radius: 5px;
-    background-color: raba(0,0,0,.7);
+    background-color: raba(0, 0, 0, 0.7);
   }
   .li-p {
     line-height: 15px;
-    > span:first-child{
+    > span:first-child {
       font-weight: bold;
     }
     > span:last-child {
@@ -189,12 +192,12 @@ onUnmounted(() => (document.onkeydown = null));
     left: 0;
     top: 0;
     width: 100%;
-    height: 100px;
+    height: 200px;
     > p:first-child {
       padding-top: 10px;
     }
     background-color: #f0f2f5;
-    border: solid 2px #DEE1E6;
+    border: solid 2px #dee1e6;
     .edit-comment {
       position: absolute;
       right: 5px;
@@ -204,7 +207,7 @@ onUnmounted(() => (document.onkeydown = null));
   ul {
     padding: 20px 10px;
     list-style: none;
-    border: solid 2px #DEE1E6;
+    border: solid 2px #dee1e6;
     border-top: none;
     border-bottom: none;
     li {

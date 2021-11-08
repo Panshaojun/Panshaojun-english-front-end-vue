@@ -6,16 +6,21 @@
           v-for="(i, index) of store.state.study.showData"
           :class="[index === showIndex ? 'study__word-active' : '']"
           class="li"
+          @click="showIndex = index"
         >
-          {{ i.id }}
-          <span @click="showIndex = index">
+          <span>
             {{ i.w }}
           </span>
-          <span class="edit-comment" @click.capture="editComment(i)">
-            <EditOutlined />
-          </span>
-          <span class="comment">
-            {{ i.comment }}
+          <span class="hide">
+            <span @click.capture="iSee(i.id)">
+              <MinusOutlined />
+            </span>
+            <span>
+              <PlusOutlined @click.capture="Study(i.id)"/>
+            </span>
+            <span @click.capture="editComment(i)">
+              <EditOutlined />
+            </span>
           </span>
         </li>
       </ul>
@@ -27,16 +32,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from "vue";
+import { ref, computed, onUnmounted, onMounted } from "vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
-import { EditOutlined } from "@ant-design/icons-vue";
+import {
+  EditOutlined,
+  MinusOutlined,
+  PlusOutlined,
+} from "@ant-design/icons-vue";
 import { StudyData } from "@/store/types/study";
 
-
-const emits=defineEmits(["editComment"]);
-const editComment=(word:StudyData)=>emits("editComment",word);
+const emits = defineEmits(["editComment"]);
+const editComment = (word: StudyData) => emits("editComment", word);
 
 const store = useStore(key);
 
@@ -50,11 +58,14 @@ const wordId = computed(() => {
 
 store.dispatch("study/initShowStartIndex");
 
-const iSee = () =>
-  store.dispatch("study/addDeleted", showData.value[showIndex.value].id);
+const iSee = (id=showData.value[showIndex.value].id) => {
+  console.log(id)
+  store.dispatch("study/addDeleted", id);
+}
+  
 
-const Study = () =>
-  store.dispatch("study/addStudy", showData.value[showIndex.value].id);
+const Study = (id=showData.value[showIndex.value].id) =>
+  store.dispatch("study/addStudy", id);
 
 //键盘控制浏览展示数据！
 const browseShowWord: (direction: 1 | -1) => void = (direction) => {
@@ -72,31 +83,36 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   }
   showIndex.value += direction;
 };
-const isEditting=computed(()=>store.state.study.editting);
-document.onkeydown = (e) => {
-  if(isEditting.value){
-    return;
-  }
-  switch (e.key) {
-    case "a":
-      iSee();
-      break;
-    case "d":
-      Study();
-      break;
-    case "w":
-      browseShowWord(-1);
-      break;
-    case "s":
-      browseShowWord(1);
-      break;
-    case "Enter":
-      break;
-    case "Backspace":
-      break;
-    default:
-  }
-};
+const isEditting = computed(() => store.state.study.editting);
+onMounted(() => {
+  document.onkeydown = (e) => {
+    //  避免编辑的时候触发事件
+    if (isEditting.value) {
+      return;
+    }
+    const key = e.key.toLowerCase();
+    switch (key) {
+      case "a":
+        iSee();
+        break;
+      case "d":
+        Study();
+        break;
+      case "w":
+        browseShowWord(-1);
+        break;
+      case "s":
+        browseShowWord(1);
+        break;
+      case "Enter":
+        break;
+      case "Backspace":
+        break;
+      default:
+    }
+  };
+});
+
 onUnmounted(() => (document.onkeydown = null));
 </script>
 
@@ -119,20 +135,25 @@ kbd {
   padding-left: 20px;
   list-style: none;
   .li {
-    &:hover .comment,
-    &:hover .edit-comment {
+    &:hover .hide {
       opacity: 1;
     }
-    .comment,
-    .edit-comment {
-      margin-left: 10px;
-      cursor: pointer;
+    .hide {
+      float: right;
+      margin-right: 10px;
       opacity: 0;
+      > span {
+        cursor: pointer;
+        margin-left: 10px;
+      }
     }
   }
 }
 .study__word-active {
   color: red;
+  .hide{
+    opacity: 1 !important;
+  }
 }
 .study__third-party {
   height: calc(100vh - 55px);

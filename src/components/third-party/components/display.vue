@@ -2,7 +2,7 @@
   <div class="bing">
     <div>
       <div>
-        <h3>{{ props.data.id }}</h3>
+        <h3 class="bing_id">{{ props.data.id }}</h3>
         <h3>{{ props.data.v_w }}</h3>
         <p class="v-des" v-html="props.data.v_short"></p>
         <p class="v-des" v-html="props.data.v_long"></p>
@@ -10,10 +10,7 @@
       <h3>{{ props.data.b_w }}</h3>
       <div class="bing_audio">
         <span v-for="(i, index) of props.data.audio">
-          <MyAudio
-            v-if="index === 0"
-            :audio="audioData"
-          />
+          <span v-if="index === 0" class="bing_audio_voice"><MyAudio :audio="audioData" /></span>
           <span v-html="i.title"></span>
         </span>
       </div>
@@ -67,15 +64,15 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import { computed } from "vue";
 import MyAudio from "@/components/audio/index.vue";
 import { WordView } from "@/api/modules/model/wordView";
 const props = defineProps<{
   data: WordView;
 }>();
-const audioData=computed(()=>{
-  return { id: props.data.id, url: props.data.audio[0].url }
-})
+const audioData = computed(() => {
+  return { id: props.data.id, url: props.data.audio[0].url };
+});
 </script>
 
 <style lang="scss">
@@ -87,6 +84,16 @@ const audioData=computed(()=>{
   }
   .bing {
     display: flex;
+    position: relative;
+    .bing_id{
+      padding-left: 60px;
+    }
+    .bing_audio_voice{
+      position: absolute;
+      top: 1px;
+      left: 0;
+      z-index: 1;
+    }
     .sider {
       flex: 0 0 200px;
     }
