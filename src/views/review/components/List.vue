@@ -12,15 +12,15 @@
       </span>
     </p>
   </div>
-  <ul>
+  <ul class="li">
     <li
       v-for="(i, index) of reviewData"
       :key="i.id"
-      :class="index === reviewIndex && 'review__list-active'"
+      :class="[index === reviewIndex && 'review__list-active']"
       @click="() => setReviewIndex(index)"
     >
       <p class="li-p">
-        <span :style="i.mark">{{ dataInfo(i.id) }}</span>
+        <span>{{ dataInfo(i.id) }}</span>
         <span v-if="i.mark" @click.capture="toMark(index, false)">
           <HeartFilled />
         </span>
@@ -44,6 +44,7 @@
 import { computed, ref, reactive, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
+import moment from "moment";
 const store = useStore(key);
 const data = store.state.word.data;
 const emits = defineEmits(["idChange"]);
@@ -82,19 +83,12 @@ const openUpdateModal = (index: number) => {
   updateModal.data.comment = currentData.comment;
   updateModal.visible = true;
 };
+const markDate=moment().add(1,"days").format("Y-MM-DD");
 const toMark = async (index: number, isMark: boolean) => {
   const currentData = reviewData.value[index];
   let id, mark;
   id = currentData.id;
-  mark = isMark
-    ? JSON.stringify({
-        fontWeight: "bold",
-        color: "white",
-        backgroundColor:"black",
-        padding:"2px 7px",
-        borderRadius:"5px"
-      })
-    : "";
+  mark = isMark? markDate: "";
   const res = await store.dispatch("review/changeMark", { id, mark });
   if (res) {
     message.success(isMark ? "标记成功！" : "取消标记成功！");
@@ -174,6 +168,12 @@ onUnmounted(() => (document.onkeydown = null));
   height: 100%;
   overflow: auto;
   position: relative;
+  .mark{
+    font-weight: bold;
+    color: black;
+    border-radius: 5px;
+    background-color: raba(0,0,0,.7);
+  }
   .li-p {
     line-height: 15px;
     > span:first-child{
@@ -194,7 +194,7 @@ onUnmounted(() => (document.onkeydown = null));
       padding-top: 10px;
     }
     background-color: #f0f2f5;
-    box-shadow: 0 0 5px 5px rgba($color: #000000, $alpha: 0.2);
+    border: solid 2px #DEE1E6;
     .edit-comment {
       position: absolute;
       right: 5px;
@@ -204,11 +204,15 @@ onUnmounted(() => (document.onkeydown = null));
   ul {
     padding: 20px 10px;
     list-style: none;
+    border: solid 2px #DEE1E6;
+    border-top: none;
+    border-bottom: none;
     li {
       cursor: pointer;
     }
   }
   .review__list-active {
+    padding: 0 0 0 4px;
     color: red;
   }
 }

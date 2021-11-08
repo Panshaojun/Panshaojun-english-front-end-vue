@@ -4,7 +4,7 @@ import ReviewState from '../types/review';
 import rootState from '../types';
 import { findAll, ReviewView, } from '@/api/modules/model/reviewView';
 import { changeDate } from '@/api/modules/model/reviewDate';
-import { find as FindReviewWord, update as updateRviewWord, UpdateReviewWordModel } from '@/api/modules/model/reviewWord';
+import { find as FindReviewWord, update as updateRviewWord, UpdateReviewWordModel,findMark } from '@/api/modules/model/reviewWord';
 import to from 'await-to-js';
 
 
@@ -13,6 +13,7 @@ const index: Module<ReviewState, rootState> = {
     state: {
         data: [],//所有复习情况
         reviewData: [], //某一天复习的数据
+        markData:{}//今天该复习的数据
     },
     mutations: {
         SET_data(state, data) {
@@ -21,13 +22,13 @@ const index: Module<ReviewState, rootState> = {
         SET_reviewData(state, data) {
             state.reviewData = data;
         },
+        SET_markData(state,data){
+            state.markData=data;
+        },
         SET_singleReviewData(state, payload) {
             const { id } = payload;
             const index = state.reviewData.findIndex(i => i.id === id);
             if (index !== -1) {
-                if (payload.mark) {
-                    payload.mark = JSON.parse(payload.mark)
-                }
                 state.reviewData[index] = Object.assign(payload);
                 state.reviewData = [...state.reviewData];
             }
@@ -47,7 +48,7 @@ const index: Module<ReviewState, rootState> = {
         },
         day: (state) => (day: string = moment().format("Y-MM-DD")) => {
             const ans: ReviewView[] = [];
-            let Ebbinghaus = [0, 1, 2, 4, 7, 15, 30, 90, 180];//一月，三月，六月
+            let Ebbinghaus = [0, 1, 2, 4, 7, 15, 30, 90, 180, 360];//一月，三月，六月
             let reviewsDay: string[] = [];
             for (let i of Ebbinghaus) {
                 const date = moment(day);
@@ -75,6 +76,25 @@ const index: Module<ReviewState, rootState> = {
             const [, data] = await to(FindReviewWord(id));
             if (data) {
                 commit("SET_reviewData", data)
+            }
+        },
+        freshMarkData: async ({ commit }) => {
+            let Ebbinghaus = [-1,0, 1, 2, 4, 7, 15, 30, 90, 180, 360];//一月，三月，六月
+            let reviewsDay: string[] = [];
+            for (let i of Ebbinghaus) {
+                const date = moment();
+                reviewsDay.push(date.add(-i, "days").format('Y-MM-DD'));
+            } 
+            const [, data] = await to(findMark(reviewsDay));
+            if (data) {
+                const sortData:{[key in string]:any[]}={};
+                for(let i of reviewsDay){
+                    sortData[i]=[]
+                }
+                for(let i of data){
+                    sortData[i.mark].push(i);
+                }
+                commit("SET_markData", sortData);
             }
         },
         updateReviewData: async ({ commit }, playload: UpdateReviewWordModel) => {

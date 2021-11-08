@@ -19,13 +19,10 @@ export type UpdateReviewWordModel={
 const model=new Model('reviewWord');
 
 export const find=(id:number)=>model.findWhere<ReviewWord[]>({where:{rid:id},limit:1000}).then(res=>{
-    if(res){
-        res.forEach(i=>{
-            if(i.mark!==""){
-                i.mark=JSON.parse(i.mark);
-            }
-        })
-    }
+    return res;
+});
+
+export const findMark=(days:string[])=>model.findWhere<ReviewWord[]>({where:{mark:days},limit:1000}).then(res=>{
     return res;
 });
 

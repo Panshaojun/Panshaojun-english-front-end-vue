@@ -4,7 +4,7 @@
       <a-col :span="3"></a-col>
       <a-col :span="18">
         <a-divider orientation="left">
-          <h1>明日复习</h1>
+          <h1>明日单词</h1>
         </a-divider>
         <a-col :span="24">
           <a-list item-layout="horizontal" :data-source="tomarrowData">
@@ -27,7 +27,7 @@
       <a-col :span="3"></a-col>
       <a-col :span="18">
         <a-divider orientation="left">
-          <h1>今日复习</h1>
+          <h1>今日单词</h1>
         </a-divider>
         <a-col :span="24">
           <a-date-picker v-model:value="date" @change="changeDate()" />
@@ -64,6 +64,7 @@ const data = ref<any>();
 const tomarrowData=ref<any>();
 store.dispatch("review/freshData");
 
+// 更改时间，改变今日复习
 const date = ref(moment());
 const changeDate = () => {
   const chooseDate = date.value

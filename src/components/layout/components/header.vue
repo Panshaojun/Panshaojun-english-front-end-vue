@@ -33,9 +33,12 @@
         </template>
         <template #title>旧单词</template>
         <a-menu-item key="5">
-          <span @click="go('/review-today')">今日学习</span>
+          <span @click="go('/review-today')">今日单词学习</span>
         </a-menu-item>
         <a-menu-item key="6">
+          <span @click="go('/review-mark')">今日标记单词学习</span>
+        </a-menu-item>
+        <a-menu-item key="7">
           <span @click="go('/review-all')">所有学习</span>
         </a-menu-item>
       </a-sub-menu>

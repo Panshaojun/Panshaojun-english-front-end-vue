@@ -37,7 +37,7 @@ import ListShow from "./components/ListShow.vue";
 import { StudyData } from "@/store/types/study";
 
 const store = useStore(key);
-const date = ref(moment());
+const date = ref(moment().add(1,"days"));
 const save = () =>
   store.dispatch("study/saveStudy", date.value.format("Y-MM-DD"));
 const add = () => store.dispatch("study/addShowLength", 10);
