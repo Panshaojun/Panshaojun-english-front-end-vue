@@ -1,60 +1,50 @@
 <template>
-  <div class="opt">
-    <p>
-      <kbd @click="browseShowWord(-1)">a</kbd>
-      <kbd @click="browseShowWord(1)">s</kbd>
-      <kbd @click="browseShowWord(1)">space</kbd>
-    </p>
-    <p v-if="reviewIndex !== -1">
-      {{ reviewData[reviewIndex].comment }}
-      <span class="edit-comment" @click.capture="openUpdateModal(reviewIndex)">
-        <EditOutlined />
-      </span>
-    </p>
+  <div class="review-list">
+    <div class="comment-box">
+      <ListComment
+        v-if="reviewIndex !== -1"
+        :data="reviewData[reviewIndex]"
+        v-model:editting="commentEditing"
+      />
+    </div>
+    <ul class="li">
+      <li
+        v-for="(i, index) of reviewData"
+        :key="i.id"
+        :class="[index === reviewIndex && 'review__list-active',isTempMark(i.id)&&'review__list-mark']"
+        @click="() => setReviewIndex(index)"
+      >
+        <p class="li-p">
+          <ListMark :id="i.id" :mark="i.mark" />
+          <span>{{ dataInfo(i.id) }}</span>
+          <span>
+            <span>
+              <ExclamationCircleOutlined v-if="isTempMark(i.id)" @click.capture="tempMark.delete(i.id)" />
+              <IssuesCloseOutlined v-else  @click.capture="tempMark.add(i.id)"/>
+            </span>
+            
+          </span>
+        </p>
+        <a-divider v-if="(index + 1) % 10 === 0" />
+      </li>
+    </ul>
   </div>
-  <ul class="li">
-    <li
-      v-for="(i, index) of reviewData"
-      :key="i.id"
-      :class="[index === reviewIndex && 'review__list-active']"
-      @click="() => setReviewIndex(index)"
-    >
-      <p class="li-p">
-        <span>{{ dataInfo(i.id) }}</span>
-        <span v-if="i.mark" @click.capture="toMark(index, false)">
-          <HeartFilled />
-        </span>
-        <span v-else @click.capture="toMark(index, true)">
-          <HeartOutlined />
-        </span>
-      </p>
-      <a-divider v-if="(index + 1) % 10 === 0" />
-    </li>
-  </ul>
-  <a-modal
-    v-model:visible="updateModal.visible"
-    :title="updateModal.title"
-    @ok="saveUpdate"
-  >
-    <a-input v-model:value="updateModal.data.comment"></a-input>
-  </a-modal>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onUnmounted, onMounted } from "vue";
+import { computed, ref, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
-import moment from "moment";
+import ListMark from "./ListMark.vue";
+import ListComment from "./ListComment.vue";
+import {
+  ExclamationCircleOutlined,
+  IssuesCloseOutlined,
+} from "@ant-design/icons-vue";
+
 const store = useStore(key);
 const data = store.state.word.data;
 const emits = defineEmits(["idChange"]);
-import {
-  EditOutlined,
-  HeartOutlined,
-  HeartFilled,
-} from "@ant-design/icons-vue";
-import { message } from "ant-design-vue";
-import to from "await-to-js";
 const dataInfo = (id: number) => {
   const index = data.findIndex((i) => i.id === id);
   return index === -1 ? "找不到数据" : data[index].w;
@@ -63,64 +53,16 @@ const reviewData = computed(() => store.state.review.reviewData);
 const reviewIndex = ref<number>(-1); //当前 reviewData 中被展示的数组下标
 const setReviewIndex = (index: number) => {
   const currentData = reviewData.value[index];
-  emits("idChange", currentData.id);
+  emits("idChange", currentData.id); // 用作联动右边的
   reviewIndex.value = index;
 };
 
-//更新
-const updateModal = reactive({
-  visible: false,
-  title: "",
-  data: {
-    id: 0,
-    comment: "",
-  },
-});
-const openUpdateModal = (index: number) => {
-  const currentData = reviewData.value[index];
-  updateModal.title = `更改 「${dataInfo(currentData.id)}」 笔记`;
-  updateModal.data.id = currentData.id;
-  updateModal.data.comment = currentData.comment;
-  updateModal.visible = true;
-};
-const markDate = moment().add(1, "days").format("Y-MM-DD");
-const toMark = async (index: number, isMark: boolean) => {
-  const currentData = reviewData.value[index];
-  let id, mark;
-  id = currentData.id;
-  mark = isMark ? markDate : "";
-  const res = await store.dispatch("review/changeMark", { id, mark });
-  if (res) {
-    message.success(isMark ? "标记成功！" : "取消标记成功！");
-    updateModal.visible = false;
-  } else {
-    message.warn(isMark ? "标记失败！" : "取消标记失败");
-  }
-};
-const saveUpdate = async () => {
-  const [, res] = await to(
-    store.dispatch("review/changeComment", { ...updateModal.data })
-  );
-  if (res) {
-    message.success("更新备注成功！");
-    updateModal.visible = false;
-  } else {
-    message.warn("更新备注失败！");
-  }
+const tempMark = ref<Set<number>>(new Set([]));
+const isTempMark = (id: number) => {
+  return tempMark.value.has(id)
 };
 
-//键盘点击事件
-const btnToMark = () => {
-  const index = reviewIndex.value;
-  if (index !== -1) {
-    const currentData = reviewData.value[index];
-    let isMark = true;
-    if (currentData.mark) {
-      isMark = false;
-    }
-    toMark(index, isMark);
-  }
-};
+//  键盘事件
 const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   if (!reviewData.value.length) {
     return;
@@ -136,21 +78,19 @@ const browseShowWord: (direction: 1 | -1) => void = (direction) => {
   }
   setReviewIndex(reviewIndex.value + direction);
 };
+const commentEditing = ref(false);
 onMounted(() => {
   document.onkeydown = (e) => {
-    if (updateModal.visible) {
+    const key = e.key.toLowerCase();
+    if (commentEditing.value) {
       return;
     }
-    const key = e.key.toLowerCase();
     switch (key) {
       case "w":
         browseShowWord(-1);
         break;
       case "s":
         browseShowWord(1);
-        break;
-      case " ":
-        btnToMark();
         break;
       case "Enter":
         break;
@@ -161,12 +101,11 @@ onMounted(() => {
     e.preventDefault();
   };
 });
-
 onUnmounted(() => (document.onkeydown = null));
 </script>
 
 <style lang="scss">
-.review__list {
+.review-list {
   padding: 0 0 20px 0;
   height: 100%;
   overflow: auto;
@@ -179,30 +118,28 @@ onUnmounted(() => (document.onkeydown = null));
   }
   .li-p {
     line-height: 15px;
-    > span:first-child {
+    > span:nth-child(2) {
+      margin-left: 5px;
       font-weight: bold;
     }
     > span:last-child {
       float: right;
       margin-right: 10px;
+      >span:not(:last-child){
+        margin-right: 5px;
+      }
     }
   }
-  .opt {
+  .comment-box {
     position: sticky;
     left: 0;
     top: 0;
     width: 100%;
-    height: 200px;
-    > p:first-child {
-      padding-top: 10px;
-    }
-    background-color: #f0f2f5;
+    height: 120px;
+    background-color: #F0F2F5;
     border: solid 2px #dee1e6;
-    .edit-comment {
-      position: absolute;
-      right: 5px;
-      bottom: 0;
-    }
+    border-top: none;
+    border-left: none;
   }
   ul {
     padding: 20px 10px;
@@ -216,6 +153,9 @@ onUnmounted(() => (document.onkeydown = null));
   }
   .review__list-active {
     padding: 0 0 0 4px;
+    color: #3174b2;
+  }
+  .review__list-mark{
     color: red;
   }
 }
