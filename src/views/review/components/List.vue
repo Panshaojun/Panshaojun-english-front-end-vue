@@ -7,25 +7,40 @@
         v-model:editting="commentEditing"
       />
     </div>
-    <ul class="li">
+    <!-- 正常复习 -->
+    <ul class="li" v-if="type === 'normal'">
       <li
         v-for="(i, index) of reviewData"
         :key="i.id"
-        :class="[
-          index === reviewIndex && 'review__list-active',
-          isTempMark(i.id) && 'review__list-mark',
-        ]"
+        :class="[index === reviewIndex && 'review__list-active']"
         @click="() => setReviewIndex(index)"
       >
         <p class="li-p">
           <span>{{ dataInfo(i.id) }}</span>
           <span>
-            <span v-if="i.mark" @click="handleMark('', '取消标记')">
+            <span v-if="i.mark" @click="WordToMark(i.id, '')">
               <HeartFilled />
             </span>
-            <span v-else @click="handleMark('mark', '添加标记')">
+            <span v-else @click="WordToMark(i.id, 'mark')">
               <HeartOutlined />
             </span>
+          </span>
+        </p>
+        <a-divider v-if="(index + 1) % 10 === 0" />
+      </li>
+    </ul>
+    <!-- 长久复习 -->
+    <ul class="li" v-else>
+      <li
+        v-for="(i, index) of reviewData"
+        :key="i.id"
+        :class="[index === reviewIndex && 'review__list-active']"
+        @click="() => setReviewIndex(index)"
+      >
+        <p class="li-p">
+          <span>{{ dataInfo(i.id) }}</span>
+          <span @click="WordToNewDay(i.id)">
+            <CarryOutOutlined />
           </span>
         </p>
         <a-divider v-if="(index + 1) % 10 === 0" />
@@ -42,12 +57,15 @@ import { useStore } from "vuex";
 import { key } from "@/store";
 import { message } from "ant-design-vue";
 import ListComment from "./ListComment.vue";
-import { HeartFilled, HeartOutlined } from "@ant-design/icons-vue";
+import {
+  HeartFilled,
+  HeartOutlined,
+  CarryOutOutlined,
+} from "@ant-design/icons-vue";
 import { updateReviewWord } from "@/api/modules/db/index";
 
 const route = useRoute();
 const type = route.query.type ? route.query.type : "normal";
-console.log(type);
 
 const store = useStore(key);
 const data = store.state.word.data;
@@ -71,27 +89,35 @@ const isTempMark = (id: number) => {
   return tempMark.value.has(id);
 };
 
-const handleMark = async (mark: string, type: string) => {
+const WordToNewDay = async (id: number) => {
+  const date = moment().add(1, "days").format("Y-MM-DD");
+  const res = await updateReviewWord(id, date);
+  if (res) {
+    message.success("添加该单词进入新一轮艾宾浩斯成功！");
+  } else {
+    message.warn("添加该单词进入新一轮艾宾浩斯失败！");
+  }
+};
+const WordToMark = async (id: number, mark: string) => {
+  const res = await store.dispatch("review/changeMark", { id, mark });
+  const msg = mark ? "标记" : "取消标记";
+  if (res) {
+    message.success(msg + "成功！");
+  } else {
+    message.warn(msg + "失败！");
+  }
+};
+
+const handleClick = async () => {
   if (reviewIndex.value === -1) {
     return;
   }
-  const id = reviewData.value[reviewIndex.value].id;
+  const data = reviewData.value[reviewIndex.value];
   // 正常复习模式
   if (type === "normal") {
-    const res = await store.dispatch("review/changeMark", { id, mark });
-    if (res) {
-      message.success(type + "成功！");
-    } else {
-      message.warn(type + "失败！");
-    }
+    WordToMark(data.id, data.mark ? "" : "mark");
   } else {
-    const date = moment().format("Y-MM-DD");
-    const res = await updateReviewWord(id, date);
-    if (res) {
-      message.success("添加该单词进入新一轮艾宾浩斯成功！");
-    } else {
-      message.warn("添加该单词进入新一轮艾宾浩斯失败！");
-    }
+    WordToNewDay(data.id);
   }
 };
 
@@ -126,18 +152,7 @@ onMounted(() => {
         browseShowWord(1);
         break;
       case " ":
-        if (reviewIndex.value !== -1) {
-          const data = reviewData.value[reviewIndex.value];
-          let mark, type;
-          if (data.mark === "") {
-            mark = "mark";
-            type = "添加标记";
-          } else {
-            mark = "";
-            type = "取消标记";
-          }
-          handleMark(mark, type);
-        }
+        handleClick();
         break;
       case "Enter":
         break;
