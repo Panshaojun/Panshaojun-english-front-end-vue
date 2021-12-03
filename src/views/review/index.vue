@@ -1,9 +1,9 @@
 <template>
   <div class="review">
-    <div class="review__list">
+    <div class="review-list">
       <ReviewList @idChange="changeWordId" />
     </div>
-    <div class="review__word-info" ref="wordShowDom">
+    <div class="review-wordInfo" ref="wordShowDom">
       <ThirdParty :wordId="wordId"></ThirdParty>
     </div>
   </div>
@@ -13,6 +13,8 @@
 import ReviewList from "./components/List.vue";
 import ThirdParty from "@/components/third-party/index.vue";
 import { ref } from "vue";
+
+
 const wordId = ref(-1);
 const wordShowDom = ref<HTMLDivElement>();
 const changeWordId = (id: number) => {
@@ -44,10 +46,10 @@ kbd {
   height: calc(100vh - 50px);
   width: 100vw;
   position: relative;
-  .review__list {
+  .review-list {
     flex: 0 0 200px;
   }
-  .review__word-info {
+  .review-wordInfo {
     flex: 1;
     height: 100%;
     overflow: auto;

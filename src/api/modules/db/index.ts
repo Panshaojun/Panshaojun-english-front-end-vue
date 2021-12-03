@@ -10,3 +10,6 @@ export const getMaxReviewId=()=>get<number|null>("/db/getMaxReviewId");
  * @returns 
  */
 export const saveStudy=(date:string,data:ReviewWord[])=>post("/db/SaveStudy",{date,data});
+
+
+export const updateReviewWord=(id:number,date:string)=>post("/db/newDays",{id,date}).then(_=>true).catch(_=>false);

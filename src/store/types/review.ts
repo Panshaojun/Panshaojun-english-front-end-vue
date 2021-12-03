@@ -5,7 +5,8 @@ type ReviewState={
     reviewData:ReviewWord[],
     markData:{
         [key in string]:ReviewWord[]
-    }
+    },
+    tempMark:Set<number>
 }
 
 export default ReviewState;

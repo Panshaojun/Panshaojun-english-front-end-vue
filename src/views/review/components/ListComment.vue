@@ -1,5 +1,5 @@
 <template>
-  <div class="review-listComment">
+  <div class="review-c-listComment">
     {{ props.data.comment }}
     <span class="edit-comment" @click.capture="openUpdateModal">
       <EditOutlined />
@@ -63,7 +63,7 @@ const saveUpdate = async () => {
 </script>
 
 <style lang="scss">
-.review-listComment {
+.review-c-listComment {
   position: relative;
   width: 100%;
   height: 100%;

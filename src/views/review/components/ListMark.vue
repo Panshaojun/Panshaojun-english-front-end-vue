@@ -1,23 +1,40 @@
 <template>
-  <span v-if="mark" @click.capture="cancelMark">
-    <HeartFilled />
+  <span v-if="type === 'normal'">
+    <span v-if="mark" @click.capture="cancelMark">
+      <HeartFilled />
+    </span>
+    <span v-else @click.capture="toMark">
+      <HeartOutlined />
+    </span>
   </span>
-  <span v-else @click.capture="toMark">
-    <HeartOutlined />
+
+  <span v-else>
+    <span v-if="isTempMark(id)" @click.capture="tempMark.delete(id)">
+    <ExclamationCircleOutlined />
+  </span>
+  <span v-else @click.capture="tempMark.add(id)">
+    <IssuesCloseOutlined />
+  </span>
   </span>
 </template>
 
 <script setup lang="ts">
-import { HeartOutlined, HeartFilled } from "@ant-design/icons-vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import moment from "moment";
 import { message } from "ant-design-vue";
-
+import { computed } from "vue";
+import {
+  HeartFilled,
+  HeartOutlined,
+  ExclamationCircleOutlined,
+  IssuesCloseOutlined
+} from "@ant-design/icons-vue";
 const store = useStore(key);
 const props = defineProps<{
   id: number;
   mark: string;
+  type: string;
 }>();
 
 const handleMark = async (mark: string, type: string) => {
@@ -32,4 +49,8 @@ const handleMark = async (mark: string, type: string) => {
 const toMark = () =>
   handleMark(moment().add(1, "days").format("Y-MM-DD"), "标记");
 const cancelMark = () => handleMark("", " 取消标记");
+const tempMark = computed(() => store.state.review.tempMark);
+const isTempMark = (id: number) => {
+  return tempMark.value.has(id);
+};
 </script>

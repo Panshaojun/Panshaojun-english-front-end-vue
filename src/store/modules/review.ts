@@ -13,7 +13,8 @@ const index: Module<ReviewState, rootState> = {
     state: {
         data: [],//所有复习情况
         reviewData: [], //某一天复习的数据
-        markData:{}//今天该复习的数据
+        markData:{},//今天该复习的数据
+        tempMark:new Set()
     },
     mutations: {
         SET_data(state, data) {
@@ -29,27 +30,17 @@ const index: Module<ReviewState, rootState> = {
             const { id } = payload;
             const index = state.reviewData.findIndex(i => i.id === id);
             if (index !== -1) {
+                // 居然可以根据索引替换了
                 state.reviewData[index] = Object.assign(payload);
-                state.reviewData = [...state.reviewData];
+                // state.reviewData = [...state.reviewData];
             }
         }
     },
     getters: {
-        tommarow: (state) => {
+        // 指定艾宾浩斯周期
+        specifyDate:(state)=>(Ebbinghaus:number[],day= moment().format("Y-MM-DD"))=>{
             const ans: ReviewView[] = [];
-            const tommarowDate = moment().add(1, "days").format('Y-MM-DD');
-            for (let i of state.data) {
-                if (i.date === tommarowDate) {
-                    ans.push(i);
-                    break;
-                }
-            }
-            return ans;
-        },
-        day: (state) => (day: string = moment().format("Y-MM-DD")) => {
-            const ans: ReviewView[] = [];
-            let Ebbinghaus = [0, 1, 2, 4, 7, 15, 30, 90, 180, 360];//一月，三月，六月
-            let reviewsDay: string[] = [];
+            const reviewsDay: string[] = [];
             for (let i of Ebbinghaus) {
                 const date = moment(day);
                 reviewsDay.push(date.add(-i, "days").format('Y-MM-DD'));
