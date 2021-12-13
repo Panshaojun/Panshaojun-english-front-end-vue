@@ -63,7 +63,9 @@
                   <div class="date">{{ item.date }}</div>
                   <div class="nums">{{ item.words }}</div>
                   <div class="go-review">
-                    <a-button @click="toReview(item.id,'formal')">复习</a-button>
+                    <a-button @click="toReview(item.id, 'formal')"
+                      >复习</a-button
+                    >
                   </div>
                 </div>
               </a-list-item>
@@ -97,19 +99,19 @@ const changeDate = () => {
     : moment().format("Y-MM-DD");
   tomarrowData.value = store.getters["review/specifyDate"]([-1]);
   recentlyData.value = store.getters["review/specifyDate"](
-    [0, 1, 2, 4, 7],
+    [0, 1, 2, 4, 7, 15],
     chooseDate
   );
   formerData.value = store.getters["review/specifyDate"](
-    [15, 30, 90, 180, 360],
+    [30, 90, 180, 360],
     chooseDate
   );
 };
 watch(() => store.state.review.data, changeDate);
 
-const toReview = (id: number,type='normal') => {
+const toReview = (id: number, type = "normal") => {
   store.dispatch("review/freshReviewData", id);
-  router.push("/review?type="+type);
+  router.push("/review?type=" + type);
 };
 </script>
 

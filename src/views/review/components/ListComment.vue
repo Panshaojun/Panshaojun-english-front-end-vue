@@ -9,6 +9,7 @@
   <a-modal
     v-model:visible="updateModal.visible"
     :title="updateModal.title"
+    @cancel="cancleUpdate"
     @ok="saveUpdate"
   >
     <a-input v-model:value="updateModal.data.comment"></a-input>
@@ -60,6 +61,10 @@ const saveUpdate = async () => {
   updateModal.visible = false;
   emits("update:editting", false);
 };
+const cancleUpdate=()=>{
+  updateModal.visible = false;
+  emits("update:editting", false);
+}
 </script>
 
 <style lang="scss">

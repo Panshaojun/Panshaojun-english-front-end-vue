@@ -180,9 +180,9 @@ onUnmounted(() => (document.onkeydown = null));
   }
   .li-p {
     line-height: 15px;
+    font-weight: bold;
     > span:nth-child(2) {
       margin-left: 5px;
-      font-weight: bold;
     }
     > span:last-child {
       float: right;
