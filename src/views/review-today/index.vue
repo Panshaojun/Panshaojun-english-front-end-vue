@@ -83,6 +83,8 @@ import { ref, watch } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import moment from "moment";
+import global from "@/global";
+
 const store = useStore(key);
 const router = useRouter();
 store.dispatch("review/freshData");
@@ -99,11 +101,11 @@ const changeDate = () => {
     : moment().format("Y-MM-DD");
   tomarrowData.value = store.getters["review/specifyDate"]([-1]);
   recentlyData.value = store.getters["review/specifyDate"](
-    [0, 1, 2, 4, 7, 15],
+    [...global.recent],
     chooseDate
   );
   formerData.value = store.getters["review/specifyDate"](
-    [30, 90, 180, 360],
+    [...global.former],
     chooseDate
   );
 };

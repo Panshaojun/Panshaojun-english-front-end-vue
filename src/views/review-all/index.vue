@@ -33,13 +33,18 @@ import { useStore } from "vuex";
 import { key } from "@/store";
 import { message } from "ant-design-vue";
 import moment from "moment";
+import global from "@/global";
 
 const store = useStore(key);
 const router = useRouter();
 const data = computed(() => store.state.review.data);
 store.dispatch("review/freshData");
 
-const maxDateNumber = Number(moment().add(-15, "days").format("YMMDD"));
+const maxDateNumber = Number(
+  moment()
+    .add(-global.recent[global.recent.length - 1], "days")
+    .format("YMMDD")
+);
 const toReview = (id: number, date: string) => {
   const dateNumber = Number(moment(date).format("YMMDD"));
   const type = dateNumber >= maxDateNumber ? "normal" : "formal";
