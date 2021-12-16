@@ -5,16 +5,20 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/study/index.vue")
   },
   {
-    path: "/review",
-    component: () => import("@/views/review/index.vue")
+    path: "/review-normal",
+    component: () => import("@/views/review-normal/index.vue")
   },
   {
-    path: "/review-today",
-    component: () => import("@/views/review-today/index.vue")
+    path: "/review-former",
+    component: () => import("@/views/review-former/index.vue")
   },
   {
-    path: "/review-all",
-    component: () => import("@/views/review-all/index.vue")
+    path: "/words-today",
+    component: () => import("@/views/words-today/index.vue")
+  },
+  {
+    path: "/words-all",
+    component: () => import("@/views/words-all/index.vue")
   },
 ];
 const router = createRouter({
