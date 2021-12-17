@@ -22,7 +22,7 @@ export const find=(id:number)=>model.findWhere<ReviewWord[]>({where:{rid:id},lim
     return res;
 });
 
-export const findMark=(days:string[])=>model.findWhere<ReviewWord[]>({where:{mark:days},limit:1000}).then(res=>{
+export const findMark=(rids:number[])=>model.findWhere<ReviewWord[]>({where:{rid:rids,mark:{"!=":''}},limit:1000}).then(res=>{
     return res;
 });
 

@@ -49,7 +49,7 @@ const toReview = (id: number, date: string) => {
   const dateNumber = Number(moment(date).format("YMMDD"));
   const type = dateNumber >= maxDateNumber ? "normal" : "formal";
   store.dispatch("review/freshReviewData", id);
-  router.push("/review?type=" + type);
+  router.push("/review-" + type);
 };
 
 const modal = reactive({

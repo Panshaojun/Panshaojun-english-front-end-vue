@@ -1,6 +1,14 @@
 <template>
   <div id="review-tody">
     <a-row>
+      <a-col :span="3"></a-col>
+      <a-col :span="18">
+        <a-divider orientation="left">
+          <a-button @click="toMarkWords">复习标记单词</a-button>
+        </a-divider>
+      </a-col>
+    </a-row>
+    <a-row>
       <!-- <a-col :span="24">
         <a-date-picker v-model:value="date" @change="changeDate()" />
       </a-col> -->
@@ -89,9 +97,9 @@ const store = useStore(key);
 const router = useRouter();
 store.dispatch("review/freshData");
 
-const tomarrowData = ref<any>([]); // 明日单词复习
-const recentlyData = ref<any>([]); // 15天内单词复习
-const formerData = ref<any>([]); // 15天以后的单词复习
+const tomarrowData = ref<any>([]); // 明日单词
+const recentlyData = ref<any>([]); // 最近单词
+const formerData = ref<any>([]); // 很久前的单词
 
 // 更改时间，改变今日复习
 const date = ref(moment()); // 日期
@@ -113,7 +121,20 @@ watch(() => store.state.review.data, changeDate);
 
 const toReview = (id: number, type = "normal") => {
   store.dispatch("review/freshReviewData", id);
-  router.push("/review?type=" + type);
+  router.push("/review-" + type);
+};
+
+const toMarkWords = () => {
+  const rids:number[]=[];
+  if(recentlyData.value.length){
+    for(let i of recentlyData.value){
+      rids.push(i.id);
+    }
+  }else{
+    return alert("木有复习的单词")
+  }
+  store.dispatch("review/freshMarkData", rids);
+  router.push("/review-normal");
 };
 </script>
 

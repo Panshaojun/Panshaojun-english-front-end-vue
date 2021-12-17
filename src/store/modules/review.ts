@@ -26,6 +26,11 @@ const index: Module<ReviewState, rootState> = {
         SET_markData(state,data){
             state.markData=data;
         },
+        DEL_reviewData(state,index){
+            if(index!==-1 && index < state.reviewData.length){
+                state.reviewData.splice(index,1)
+            }
+        },
         SET_singleReviewData(state, payload) {
             const { id } = payload;
             const index = state.reviewData.findIndex(i => i.id === id);
@@ -69,23 +74,10 @@ const index: Module<ReviewState, rootState> = {
                 commit("SET_reviewData", data)
             }
         },
-        freshMarkData: async ({ commit }) => {
-            let Ebbinghaus = [-1,0, 1, 2, 4, 7, 15, 30, 90, 180, 360];//一月，三月，六月
-            let reviewsDay: string[] = [];
-            for (let i of Ebbinghaus) {
-                const date = moment();
-                reviewsDay.push(date.add(-i, "days").format('Y-MM-DD'));
-            } 
-            const [, data] = await to(findMark(reviewsDay));
+        freshMarkData: async ({ commit },rids) => {
+            const [, data] = await to(findMark(rids));
             if (data) {
-                const sortData:{[key in string]:any[]}={};
-                for(let i of reviewsDay){
-                    sortData[i]=[]
-                }
-                for(let i of data){
-                    sortData[i.mark].push(i);
-                }
-                commit("SET_markData", sortData);
+                commit("SET_reviewData", data)
             }
         },
         updateReviewData: async ({ commit }, playload: UpdateReviewWordModel) => {

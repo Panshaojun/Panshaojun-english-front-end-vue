@@ -7,8 +7,7 @@
         v-model:editting="commentEditing"
       />
     </div>
-    <!-- 正常复习 -->
-    <ul class="li" v-if="type === 'normal'">
+    <ul class="li">
       <li
         v-for="(i, index) of reviewData"
         :key="i.id"
@@ -17,29 +16,7 @@
       >
         <p class="li-p">
           <span>{{ dataInfo(i.id) }}</span>
-          <span>
-            <span v-if="i.mark" @click="WordToMark(i.id, '')">
-              <HeartFilled />
-            </span>
-            <span v-else @click="WordToMark(i.id, 'mark')">
-              <HeartOutlined />
-            </span>
-          </span>
-        </p>
-        <a-divider v-if="(index + 1) % 10 === 0" />
-      </li>
-    </ul>
-    <!-- 长久复习 -->
-    <ul class="li" v-else>
-      <li
-        v-for="(i, index) of reviewData"
-        :key="i.id"
-        :class="[index === reviewIndex && 'review__list-active']"
-        @click="() => setReviewIndex(index)"
-      >
-        <p class="li-p">
-          <span>{{ dataInfo(i.id) }}</span>
-          <span @click="WordToNewDay(i.id)">
+          <span @click="WordToNewDay(i.id,index)">
             <CarryOutOutlined />
           </span>
         </p>
@@ -51,21 +28,13 @@
 
 <script setup lang="ts">
 import moment from "moment";
-import { useRoute } from "vue-router";
 import { computed, ref, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import { key } from "@/store";
 import { message } from "ant-design-vue";
 import ListComment from "./ListComment.vue";
-import {
-  HeartFilled,
-  HeartOutlined,
-  CarryOutOutlined,
-} from "@ant-design/icons-vue";
+import { CarryOutOutlined } from "@ant-design/icons-vue";
 import { updateReviewWord } from "@/api/modules/db/index";
-
-const route = useRoute();
-const type = route.query.type ? route.query.type : "normal";
 
 const store = useStore(key);
 const data = store.state.word.data;
@@ -79,6 +48,7 @@ const dataInfo = (id: number) => {
 const reviewData = computed(() => store.state.review.reviewData);
 const reviewIndex = ref<number>(-1); //当前 reviewData 中被展示的数组下标
 const setReviewIndex = (index: number) => {
+  index=reviewData.value.length>index?index:(reviewData.value.length-1);
   const currentData = reviewData.value[index];
   emits("idChange", currentData.id); // 用作联动右边的
   reviewIndex.value = index;
@@ -89,22 +59,15 @@ const isTempMark = (id: number) => {
   return tempMark.value.has(id);
 };
 
-const WordToNewDay = async (id: number) => {
-  const date = moment().add(1, "days").format("Y-MM-DD");
+const WordToNewDay = async (id: number,index:number) => {
+  const date = moment().format("Y-MM-DD");
   const res = await updateReviewWord(id, date);
   if (res) {
+    store.commit("review/DEL_reviewData",index);
+    setReviewIndex(index);
     message.success("添加该单词进入新一轮艾宾浩斯成功！");
   } else {
     message.warn("添加该单词进入新一轮艾宾浩斯失败！");
-  }
-};
-const WordToMark = async (id: number, mark: string) => {
-  const res = await store.dispatch("review/changeMark", { id, mark });
-  const msg = mark ? "标记" : "取消标记";
-  if (res) {
-    message.success(msg + "成功！");
-  } else {
-    message.warn(msg + "失败！");
   }
 };
 
@@ -114,11 +77,7 @@ const handleClick = async () => {
   }
   const data = reviewData.value[reviewIndex.value];
   // 正常复习模式
-  if (type === "normal") {
-    WordToMark(data.id, data.mark ? "" : "mark");
-  } else {
-    WordToNewDay(data.id);
-  }
+  WordToNewDay(data.id,reviewIndex.value);
 };
 
 //  键盘事件

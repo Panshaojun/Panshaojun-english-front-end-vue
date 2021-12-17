@@ -9,8 +9,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/review-normal/index.vue")
   },
   {
-    path: "/review-former",
-    component: () => import("@/views/review-former/index.vue")
+    path: "/review-formal",
+    component: () => import("@/views/review-formal/index.vue")
   },
   {
     path: "/words-today",
