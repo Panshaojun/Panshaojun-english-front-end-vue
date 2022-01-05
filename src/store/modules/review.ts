@@ -42,7 +42,8 @@ const index: Module<ReviewState, rootState> = {
         }
     },
     getters: {
-        // 指定艾宾浩斯周期
+        // 指定艾宾浩斯周期，Ebbinghaus是周期数，day是指定日期
+        // 根据指定日期 day 进行周期推算
         specifyDate:(state)=>(Ebbinghaus:number[],day= moment().format("Y-MM-DD"))=>{
             const ans: ReviewView[] = [];
             const reviewsDay: string[] = [];

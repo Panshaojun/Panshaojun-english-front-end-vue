@@ -60,7 +60,7 @@ const isTempMark = (id: number) => {
 };
 
 const WordToNewDay = async (id: number,index:number) => {
-  const date = moment().format("Y-MM-DD");
+  const date = moment().add(1,"days").format("Y-MM-DD");
   const res = await updateReviewWord(id, date);
   if (res) {
     store.commit("review/DEL_reviewData",index);

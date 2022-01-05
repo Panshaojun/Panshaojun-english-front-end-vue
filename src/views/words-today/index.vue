@@ -4,7 +4,10 @@
       <a-col :span="3"></a-col>
       <a-col :span="18">
         <a-divider orientation="left">
-          <a-button @click="toMarkWords">复习标记单词</a-button>
+          
+          <a-button @click="toMarkWords(0)">今日标记单词</a-button>
+          &nbsp;&nbsp;&nbsp;
+          <a-button @click="toMarkWords(-1)">昨日标记单词</a-button>
         </a-divider>
       </a-col>
     </a-row>
@@ -124,10 +127,14 @@ const toReview = (id: number, type = "normal") => {
   router.push("/review-" + type);
 };
 
-const toMarkWords = () => {
+const toMarkWords = (offset:number) => {
+  const data=store.getters["review/specifyDate"](
+    [...global.recent],
+    moment().add(offset,"days").format("Y-MM-DD")
+  );
   const rids:number[]=[];
-  if(recentlyData.value.length){
-    for(let i of recentlyData.value){
+  if(data.length){
+    for(let i of data){
       rids.push(i.id);
     }
   }else{
