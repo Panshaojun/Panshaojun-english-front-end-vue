@@ -9,19 +9,20 @@
       </div>
       <h3>{{ props.data.b_w }}</h3>
       <div class="bing_audio">
-        <span v-for="(i, index) of props.data.audio">
+        <span v-for="(i, index) of props.data.audio" :key="index">
           <span v-if="index === 0" class="bing_audio_voice"><MyAudio :audio="audioData" /></span>
           <span v-html="i.title"></span>
         </span>
       </div>
 
       <div class="bing__definition">
-        <div v-for="i of props.data.definition" v-html="i.title + i.item"></div>
+        <div v-for="i,k of props.data.definition" :key="k" v-html="i.title + i.item"></div>
       </div>
 
       <div class="bing__wordchange" v-if="props.data.word_change.length">
         词形变换:&nbsp;<span
-          v-for="i of props.data.word_change"
+          v-for="i,k of props.data.word_change"
+          :key="k"
           :title="i.key"
           >{{ i.val }}</span
         >
@@ -29,7 +30,7 @@
 
       <div class="bing__examples">
         <p class="bing__examples-t">例句</p>
-        <div class="bing__examples-e" v-for="i of props.data.examples">
+        <div class="bing__examples-e" v-for="i,k of props.data.examples" :key="k">
           <p v-html="i.en"></p>
           <p v-html="i.cn"></p>
         </div>
@@ -37,10 +38,10 @@
 
       <div class="bing__english-chinese">
         <h2>英汉双解:</h2>
-        <div v-for="i of props.data.english_chinese">
+        <div v-for="i,k of props.data.english_chinese" :key="k">
           <span class="type">{{ i.type }}</span>
           <ul class="list">
-            <li v-for="j of i.examples">
+            <li v-for="j,k2 of i.examples" :key="k2">
               <span v-html="j.english_words"></span>
               <span v-html="j.chinese_explanation"></span>
             </li>
@@ -51,11 +52,11 @@
 
     <div class="sider">
       <div class="bing__sider">
-        <div v-for="i of props.data.sider">
+        <div v-for="i,k of props.data.sider" :key="k">
           <h3>{{ i.title }}</h3>
-          <div v-for="j of i.content">
+          <div v-for="j,k2 of i.content" :key="k2">
             <span class="type">{{ j.type }}</span>
-            <div v-for="x of j.list">{{ x }}</div>
+            <div v-for="x,k3 of j.list" :key="k3">{{ x }}</div>
           </div>
         </div>
       </div>

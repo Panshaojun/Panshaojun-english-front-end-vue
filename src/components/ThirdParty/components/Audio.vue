@@ -1,5 +1,5 @@
 <template>
-  <p class="c-audio" @mouseleave="pauseAudio()">
+  <p class="ThirdPartyAudio" @mouseleave="pauseAudio()">
     <span v-if="audioUrl">
       <span @mouseenter="playAudio()">播放发音</span>
       <audio loop ref="audioDom" :src="audioUrl" :key="audioUrl"></audio>
@@ -39,7 +39,7 @@ const pauseAudio = () => {
 </script>
 
 <style lang="scss">
-.c-audio {
+.ThirdPartyAudio {
   cursor: pointer;
 }
 </style>
