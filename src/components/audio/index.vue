@@ -9,10 +9,9 @@
 </template>
 
 <script setup lang="ts">
+import { getAudioById } from "@/api/modules/model/audioFile";
 import { ref } from "vue";
-import { useStore } from "vuex";
-import { key } from "@/store";
-const store = useStore(key);
+
 const props = defineProps<{
   audio: {
     id: number;
@@ -21,7 +20,7 @@ const props = defineProps<{
 }>();
 const audioUrl = ref("");
 const audioDom = ref<HTMLAudioElement>();
-store.dispatch("cache/getAudio", props.audio).then((url) => {
+getAudioById(props.audio.id).then((url) => {
   if (url) {
     audioUrl.value = url;
   }
@@ -40,7 +39,7 @@ const pauseAudio = () => {
 </script>
 
 <style lang="scss">
-.c-audio{
+.c-audio {
   cursor: pointer;
 }
 </style>
